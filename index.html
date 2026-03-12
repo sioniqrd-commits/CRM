@@ -35,6 +35,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .toast-item.info{background:#fff;border-left:4px solid var(--p);color:var(--t1)}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 @keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(26,31,54,.45);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);animation:fadeIn .15s ease}
@@ -98,7 +99,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .content{flex:1;overflow-y:auto;padding:22px 24px}
 
 /* ── LOGIN PAGE ── */
-#login-page{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);display:flex;align-items:center;justify-content:center}
+#login-page{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);display:none;align-items:center;justify-content:center}
 .login-box{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:40px 44px;width:100%;max-width:400px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
 .login-mark{width:46px;height:46px;background:linear-gradient(135deg,var(--p),#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(67,97,238,.4)}
@@ -313,6 +314,18 @@ table.tbl tbody tr:hover td{background:var(--bg)}
 <div id="toast"></div>
 
 <!-- SIDEBAR -->
+<!-- INITIAL LOADING SCREEN (shown while sheets data loads before login) -->
+<div id="app-loader" style="position:fixed;inset:0;z-index:99998;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px">
+  <div style="width:48px;height:48px;background:linear-gradient(135deg,#4361ee,#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(67,97,238,.4)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:24px;height:24px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  </div>
+  <div style="color:rgba(255,255,255,.7);font-size:13px;font-weight:600;letter-spacing:.3px">Sioniq CRM</div>
+  <div style="width:160px;height:3px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden">
+    <div style="height:100%;background:linear-gradient(90deg,#4361ee,#7c3aed);border-radius:99px;animation:loadBar 1.5s ease-in-out infinite"></div>
+  </div>
+  <div style="color:rgba(255,255,255,.35);font-size:11px">Loading…</div>
+</div>
+
 <!-- LOGIN PAGE -->
 <div id="login-page">
   <div class="login-box">
@@ -328,8 +341,11 @@ table.tbl tbody tr:hover td{background:var(--bg)}
       <label>Password</label>
       <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <button class="login-btn" onclick="doLogin()" id="login-btn">Sign In →</button>
     <div class="login-err" id="login-err">Invalid username or password</div>
+    <div id="login-loading" style="text-align:center;margin-top:14px;font-size:11px;color:rgba(255,255,255,.35);display:none">
+      <span style="animation:spin 1s linear infinite;display:inline-block;margin-right:6px">⟳</span>Loading user data…
+    </div>
   </div>
 </div>
 
@@ -3331,7 +3347,7 @@ function init(){
   const h=new Date().getHours();
   const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   document.getElementById('dash-greeting').textContent=`${greet}, Admin 👋`;
-  // Auto-load from Google Sheets if URL is saved
+  // Load from sheets FIRST, show login after load completes (so employee creds are available)
   sheetsAutoLoad();
 }
 
@@ -3592,10 +3608,20 @@ var LOAD_TABLES = ['products','plans','costTypes','mappings','employees',
   'campaigns','walkins','prospects','leads','opportunities',
   'tasks','customers','quotations','invoices','onboards'];
 
-// Called after the auto-counters restore to keep IDs consistent
 function sheetsAutoLoad(){
-  if(!_getScriptUrl()) return;
+  if(!_getScriptUrl()){
+    // No sheets URL — go straight to login
+    _showLoginPage();
+    return;
+  }
 
+  // Show loading state on login page while fetching data
+  var loginLoad = document.getElementById('login-loading');
+  var loginBtn  = document.getElementById('login-btn');
+  if(loginLoad) loginLoad.style.display = 'block';
+  if(loginBtn)  loginBtn.disabled = true;
+
+  // Show loading bar at top
   var ind = document.getElementById('_load-ind');
   if(!ind){
     ind = document.createElement('div');
@@ -3608,41 +3634,39 @@ function sheetsAutoLoad(){
   sheetsGet('load', LOAD_TABLES,
     function(d){
       if(ind) ind.remove();
-      if(!d.ok || !d.data){ return; }
+      if(loginLoad) loginLoad.style.display = 'none';
+      if(loginBtn)  loginBtn.disabled = false;
 
-      var loaded = 0;
-      LOAD_TABLES.forEach(function(table){
-        var rows = d.data[table];
-        if(!rows || !rows.length) return;
-        var existingIds = new Set(DB[table].map(function(r){ return r.id; }));
-        rows.forEach(function(row){
-          if(row.id && !existingIds.has(row.id)){
-            Array.prototype.push.call(DB[table], row);
-            existingIds.add(row.id);
-            var parts = row.id.split('-');
-            var num = parseInt(parts[parts.length-1])||0;
-            var prefix = parts.slice(0, parts.length-1).join('-');
-            if(prefix && num) counters[prefix] = Math.max(counters[prefix]||0, num);
-          }
+      if(d.ok && d.data){
+        var loaded = 0;
+        LOAD_TABLES.forEach(function(table){
+          var rows = d.data[table];
+          if(!rows || !rows.length) return;
+          var existingIds = new Set(DB[table].map(function(r){ return r.id; }));
+          rows.forEach(function(row){
+            if(row.id && !existingIds.has(row.id)){
+              Array.prototype.push.call(DB[table], row);
+              existingIds.add(row.id);
+              var parts = String(row.id).split('-');
+              var num = parseInt(parts[parts.length-1])||0;
+              var prefix = parts.slice(0, parts.length-1).join('-');
+              if(prefix && num) counters[prefix] = Math.max(counters[prefix]||0, num);
+            }
+          });
+          loaded += (d.data[table]||[]).length;
         });
-        loaded += rows.length;
-      });
-
-      renderDashboard(); updateChips();
-      renderProdList(); renderPlanList(); renderCTList();
-      renderEmpList(); renderProspectList(); renderLeadList();
-      renderOppList(); renderCustList(); renderQtList(); renderInvList();
-      buildMapProductOptions();
-
-      if(loaded > 0){
-        _showSyncBadge('all', true);
-        var badge = document.getElementById('_sync-badge');
-        if(badge) badge.textContent = '☁ Loaded ' + loaded + ' records from Sheets';
+        console.log('Sheets loaded: ' + loaded + ' records');
       }
+      // Show login page NOW — employee data is in DB
+      _showLoginPage();
     },
     function(err){
       if(ind) ind.remove();
+      if(loginLoad) loginLoad.style.display = 'none';
+      if(loginBtn)  loginBtn.disabled = false;
       console.warn('Sheets auto-load failed:', err.message);
+      // Still show login even if load failed
+      _showLoginPage();
     }
   );
 }
@@ -3656,50 +3680,96 @@ function _by(){ return (_currentUser&&_currentUser.name)||'Admin'; }
 var _currentUser = null;
 var MASTER_USER = { userId:'sioniqadmin', userPass:'sio@123', name:'Admin User', role:'Admin' };
 
+function _showLoginPage(){
+  var loader = document.getElementById('app-loader');
+  if(loader) loader.style.display = 'none';
+  var lp = document.getElementById('login-page');
+  if(lp) lp.style.display = 'flex';
+}
+
 function doLogin(){
   var u = (document.getElementById('login-user').value||'').trim();
   var p = (document.getElementById('login-pass').value||'').trim();
   var err = document.getElementById('login-err');
-  if(!u||!p){ err.textContent='Enter username and password'; err.style.display='block'; return; }
+  err.style.display = 'none';
 
-  // Master login
+  if(!u || !p){
+    err.textContent = 'Please enter username and password';
+    err.style.display = 'block';
+    return;
+  }
+
+  // Master admin login
   if(u === MASTER_USER.userId && p === MASTER_USER.userPass){
-    _currentUser = MASTER_USER;
+    _currentUser = { userId:MASTER_USER.userId, name:MASTER_USER.name, role:MASTER_USER.role };
     _afterLogin();
     return;
   }
-  // Employee login — check after DB loaded
-  var emp = DB.employees.find(function(e){ return e.userId && e.userId===u && e.userPass===p && e.status==='Active'; });
+
+  // Employee login — DB.employees loaded from sheets before login shown
+  var emp = DB.employees.find(function(e){
+    return e.userId && String(e.userId).trim() === u &&
+           e.userPass && String(e.userPass).trim() === p &&
+           e.status === 'Active';
+  });
   if(emp){
-    _currentUser = { userId:emp.userId, name:emp.name, role:emp.desigName||'Employee', empId:emp.id };
+    _currentUser = { userId:emp.userId, name:emp.name, role:(emp.desigName||emp.lvlName||'Employee'), empId:emp.id };
     _afterLogin();
     return;
   }
+
   err.textContent = 'Invalid username or password';
   err.style.display = 'block';
   document.getElementById('login-pass').value = '';
 }
 
 function _afterLogin(){
-  document.getElementById('login-page').style.display = 'none';
+  // Hide login page
+  var lp = document.getElementById('login-page');
+  if(lp) lp.style.display = 'none';
+
   // Update sidebar footer
   var av = document.getElementById('sb-av-init');
   if(av) av.textContent = (_currentUser.name||'U').charAt(0).toUpperCase();
   var nm = document.getElementById('sb-user-name');
-  if(nm) nm.textContent = _currentUser.name||'User';
+  if(nm) nm.textContent = _currentUser.name || 'User';
   var rl = document.getElementById('sb-user-role');
-  if(rl) rl.textContent = _currentUser.role||'Employee';
+  if(rl) rl.textContent = _currentUser.role || 'Employee';
+
   // Update greeting
+  var h = new Date().getHours();
+  var greet = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   var g = document.getElementById('dash-greeting');
-  if(g){ var h=new Date().getHours(); g.textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(_currentUser.name||'Admin')+' 👋'; }
+  if(g) g.textContent = greet + ', ' + (_currentUser.name||'Admin') + ' 👋';
+
+  // Refresh all lists and dropdowns now that data is in DB
+  renderDashboard(); updateChips();
+  renderProdList(); renderPlanList(); renderCTList();
+  renderEmpList(); renderProspectList(); renderLeadList();
+  renderOppList(); renderCustList(); renderQtList(); renderInvList();
+  renderLeadStatusList(); buildMapProductOptions();
+  try{ renderWalkinList(); }catch(e){}
+  try{ renderOnboardList(); }catch(e){}
+  try{ renderTaskList(); }catch(e){}
+  try{ renderCampList(); }catch(e){}
+
+  // Show sync badge
+  if(DB.employees.length || DB.customers.length){
+    _showSyncBadge('all', true);
+    var badge = document.getElementById('_sync-badge');
+    var total = LOAD_TABLES.reduce(function(s,t){ return s+(DB[t]||[]).length; }, 0);
+    if(badge && total > 0) badge.textContent = '☁ Loaded ' + total + ' records';
+  }
 }
 
 function doLogout(){
   _currentUser = null;
-  document.getElementById('login-page').style.display = 'flex';
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
   document.getElementById('login-err').style.display = 'none';
+  var loader = document.getElementById('app-loader');
+  if(loader) loader.style.display = 'none';
+  _showLoginPage();
 }
 
 // ─── SIDEBAR TOGGLE ───────────────────────────────────────────────────────────
