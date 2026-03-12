@@ -97,6 +97,43 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .btn-xs{padding:3px 9px;font-size:10px;border-radius:6px}
 .content{flex:1;overflow-y:auto;padding:22px 24px}
 
+/* ── LOGIN PAGE ── */
+#login-page{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);display:flex;align-items:center;justify-content:center}
+.login-box{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:40px 44px;width:100%;max-width:400px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
+.login-mark{width:46px;height:46px;background:linear-gradient(135deg,var(--p),#7c3aed);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(67,97,238,.4)}
+.login-title{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.4px}
+.login-sub{font-size:11px;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.6px;text-transform:uppercase}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.login-field input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;font-size:13px;color:#fff;font-family:inherit;outline:none;transition:all .2s;box-sizing:border-box}
+.login-field input:focus{border-color:rgba(99,102,241,.6);background:rgba(255,255,255,.12);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.login-field input::placeholder{color:rgba(255,255,255,.25)}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--p),#7c3aed);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;transition:all .2s;box-shadow:0 4px 16px rgba(67,97,238,.4)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(67,97,238,.5)}
+.login-err{background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#fca5a5;margin-top:12px;text-align:center;display:none}
+
+/* ── SIDEBAR TOGGLE ── */
+.sb-toggle{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .15s;flex-shrink:0}
+.sb-toggle:hover{background:var(--bg);border-color:var(--pm);color:var(--p)}
+.sidebar.collapsed{width:0;overflow:hidden;border:none}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:500;transform:translateX(-100%);transition:transform .25s ease;width:248px!important;overflow-y:auto!important}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .sb-overlay{display:block!important}
+  .main{width:100%}
+  .topbar{padding:0 12px;gap:8px}
+  .tb-search{width:140px}
+  .content{padding:14px}
+  .fg.c2,.fg.c3,.fg.c4{grid-template-columns:1fr!important}
+  .kpi-row.c4{grid-template-columns:1fr 1fr!important}
+  .kpi-row.c3{grid-template-columns:1fr 1fr!important}
+}
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499}
+
+/* ── SHEETS PAGE SCROLL FIX ── */
+#page-sheets{overflow-y:auto;height:100%}
+
 /* ── PAGES ── */
 .page{display:none}
 .page.active{display:block;animation:pgIn .2s ease}
@@ -276,6 +313,29 @@ table.tbl tbody tr:hover td{background:var(--bg)}
 <div id="toast"></div>
 
 <!-- SIDEBAR -->
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div><div class="login-title">Sioniq CRM</div><div class="login-sub">Sign in to continue</div></div>
+    </div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Enter your username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-err" id="login-err">Invalid username or password</div>
+  </div>
+</div>
+
+<!-- Sidebar mobile overlay -->
+<div id="sb-overlay" onclick="toggleSidebar()"></div>
+
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
@@ -316,14 +376,21 @@ table.tbl tbody tr:hover td{background:var(--bg)}
     <div class="ni" onclick="nav('sheets',this)" id="nav-sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Sheets Sync</div>
   </div>
   <div class="sb-foot">
-    <div class="sb-av">A</div>
-    <div><div style="font-size:12px;font-weight:600">Admin User</div><div style="font-size:10px;color:var(--t3)">CRM Manager</div></div>
+    <div class="sb-av" id="sb-av-init">A</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sb-user-name">Admin User</div>
+      <div style="font-size:10px;color:var(--t3)" id="sb-user-role">CRM Manager</div>
+    </div>
+    <button class="btn btn-d btn-xs" onclick="doLogout()" title="Logout" style="padding:4px 8px;font-size:10px">↩</button>
   </div>
 </aside>
 
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <button class="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="tb-bc">
       <span class="tb-mod" id="tb-mod">Overview</span>
       <span class="tb-sep">›</span>
@@ -1412,7 +1479,7 @@ function delConfirm(arr, id, tbodyId, renderFn, noun='record'){
 // ─── PRODUCTS ───
 function saveProduct(){
   const name=v('prod-name'); if(!name){toast('Product name is required','error');return;}
-  const obj={id:nextId('PROD'),name,category:v('prod-cat'),multiSale:v('prod-multi'),description:v('prod-desc'),status:v('prod-status')};
+  const obj={id:nextId('PROD'),name,category:v('prod-cat'),multiSale:v('prod-multi'),description:v('prod-desc'),status:v('prod-status'),createdAt:_ts(),createdBy:_by()};
   DB.products.push(obj); renderProdList(); buildMapProductOptions();
   clearForm('prod'); toast('Product saved ✓');
   sheetsAutoPush('products');
@@ -1432,7 +1499,7 @@ function editProductModal(id){
 // ─── PLANS ───
 function savePlan(){
   const name=v('plan-name'); if(!name){toast('Plan name required','error');return;}
-  const obj={id:nextId('PLN'),name,minUsers:v('plan-users'),status:v('plan-status')};
+  const obj={id:nextId('PLN'),name,minUsers:v('plan-users'),status:v('plan-status'),createdAt:_ts(),createdBy:_by()};
   DB.plans.push(obj); renderPlanList(); buildMapProductOptions(); clearForm('plan'); toast('Plan saved ✓');
   sheetsAutoPush('plans');
 }
@@ -1443,7 +1510,7 @@ function renderPlanList(){
 // ─── COST TYPES ───
 function saveCostType(){
   const name=v('ct-name'); if(!name){toast('Cost type name required','error');return;}
-  const obj={id:nextId('CT'),name,duration:v('ct-dur'),costOn:v('ct-coston'),offer:v('ct-offer'),status:v('ct-status')};
+  const obj={id:nextId('CT'),name,duration:v('ct-dur'),costOn:v('ct-coston'),offer:v('ct-offer'),status:v('ct-status'),createdAt:_ts(),createdBy:_by()};
   DB.costTypes.push(obj); renderCTList(); clearForm('ct'); toast('Cost type saved ✓');
   sheetsAutoPush('costTypes');
 }
@@ -1581,7 +1648,7 @@ function saveEmployee(){
   const desig=gv('emp-desig'); const desigName=DB.designations.find(d=>d.id===desig)?.name||desig;
   const lvl=gv('emp-level'); const lvlName=DB.levels.find(l=>l.id===lvl)?.name||lvl;
   const mgr=gv('emp-manager'); const mgrName=DB.employees.find(e=>e.id===mgr)?.name||'';
-  const obj={id:gv('emp-id'),name,mobile,email:v('emp-email'),dept,deptName,desig,desigName,lvl,lvlName,manager:mgr,managerName:mgrName,userId:v('emp-userid'),status:v('emp-status')};
+  const obj={id:gv('emp-id'),name,mobile,email:v('emp-email'),dept,deptName,desig,desigName,lvl,lvlName,manager:mgr,managerName:mgrName,userId:v('emp-userid'),userPass:v('emp-pass'),status:v('emp-status'),createdAt:new Date().toISOString(),createdBy:(_currentUser&&_currentUser.name)||'Admin'};
   DB.employees.push(obj); renderEmpList(); clearEmpForm(); updateChips();
   toast('Employee saved ✓');
   sheetsAutoPush('employees');
@@ -1595,7 +1662,7 @@ function clearEmpForm(){ ['emp-name','emp-mobile','emp-email','emp-userid','emp-
 function saveCampaign(){
   const name=v('camp-name'); if(!name){toast('Campaign name required','error');return;}
   const owner=gv('camp-owner'); const ownerName=DB.employees.find(e=>e.id===owner)?.name||'';
-  const obj={id:gv('camp-id'),name,type:v('camp-type'),start:v('camp-start'),end:v('camp-end'),budget:v('camp-budget'),expLeads:v('camp-leads'),owner,ownerName,status:v('camp-status')};
+  const obj={id:gv('camp-id'),name,type:v('camp-type'),start:v('camp-start'),end:v('camp-end'),budget:v('camp-budget'),expLeads:v('camp-leads'),owner,ownerName,status:v('camp-status'),createdAt:_ts(),createdBy:_by()};
   DB.campaigns.push(obj); renderCampList(); clearForm('camp');
   document.getElementById('camp-id').value=nextId('CMP');
   toast('Campaign saved ✓');
@@ -1655,7 +1722,7 @@ function saveWalkin(){
     product:prod, productName:prodName,
     sales, salesName,
     remarks:v('wk-remarks'),
-    status
+    status, createdAt:_ts(), createdBy:_by()
   };
   DB.walkins.push(obj);
   // If status is "Prospect", auto-convert
@@ -1845,7 +1912,7 @@ function saveProspect(data=null){
   const sales=data?data.sales:gv('pro-sales'); const salesName=DB.employees.find(e=>e.id===sales)?.name||'';
   // Customer ID: always assigned at Prospect stage (auto-generated in form)
   const custId=data?data.custId:(v('pro-cust-id')||nextId('CUST'));
-  const obj={id:data?data.id:gv('pro-id'),custId,company,contact,mobile:data?data.mobile:v('pro-mobile'),email:data?data.email:v('pro-email'),city:data?data.city:v('pro-city'),industry:data?data.industry:v('pro-industry'),source:data?data.source:v('pro-source'),sales,salesName,remarks:data?data.remarks:v('pro-remarks')};
+  const obj={id:data?data.id:gv('pro-id'),custId,company,contact,mobile:data?data.mobile:v('pro-mobile'),email:data?data.email:v('pro-email'),city:data?data.city:v('pro-city'),industry:data?data.industry:v('pro-industry'),source:data?data.source:v('pro-source'),sales,salesName,remarks:data?data.remarks:v('pro-remarks'),createdAt:_ts(),createdBy:_by()};
   DB.prospects.push(obj); renderProspectList(); updateChips();
   if(!data){
     const tt=v('pro-task-title'),te=gv('pro-task-emp'),td=v('pro-task-due');
@@ -1919,7 +1986,7 @@ function saveLead(){
   const statusColor=DB.leadStatuses.find(l=>l.id===status)?.color||'#4361ee';
   const assigned=gv('lead-assigned'); const assignedName=DB.employees.find(e=>e.id===assigned)?.name||'';
   const custId=v('lead-cust-id')||'';
-  const obj={id:gv('lead-id'),custId,prospect:gv('lead-prospect'),company,contact:v('lead-contact'),mobile:v('lead-mobile'),product:prod,productName:prodName,source:v('lead-source'),status,statusName,statusColor,assigned,assignedName,value:v('lead-value'),closeDate:v('lead-close'),remarks:v('lead-remarks')};
+  const obj={id:gv('lead-id'),custId,prospect:gv('lead-prospect'),company,contact:v('lead-contact'),mobile:v('lead-mobile'),product:prod,productName:prodName,source:v('lead-source'),status,statusName,statusColor,assigned,assignedName,value:v('lead-value'),closeDate:v('lead-close'),remarks:v('lead-remarks'),createdAt:_ts(),createdBy:_by()};
   DB.leads.push(obj); renderLeadList(); updateChips();
   const tt=v('lead-task-title'),te=gv('lead-task-emp'),td=v('lead-task-due');
   if(tt&&te){const tObj={id:nextId('TSK'),title:tt,relType:'Lead',refId:obj.id,assigned:te,assignedName:DB.employees.find(e=>e.id===te)?.name||'',priority:v('lead-task-priority')||'Medium',dueDate:td,status:'Pending',remarks:''};DB.tasks.push(tObj);updateChips();toast(`Lead + Task ${tObj.id} saved ✓`);sheetsAutoPush('tasks');}
@@ -2021,7 +2088,7 @@ function saveOpportunity(){
   }
   const prod=gv('opp-product'); const prodName=DB.products.find(p=>p.id===prod)?.name||prod;
   const owner=gv('opp-owner'); const ownerName=DB.employees.find(e=>e.id===owner)?.name||'';
-  const obj={id:gv('opp-id'),custId,lead:gv('opp-lead'),customer,company:v('opp-company'),mobile:v('opp-mobile'),product:prod,productName:prodName,value:v('opp-value'),stage:v('opp-stage'),prob:v('opp-prob'),closeDate:v('opp-close'),owner,ownerName,remarks:v('opp-remarks')};
+  const obj={id:gv('opp-id'),custId,lead:gv('opp-lead'),customer,company:v('opp-company'),mobile:v('opp-mobile'),product:prod,productName:prodName,value:v('opp-value'),stage:v('opp-stage'),prob:v('opp-prob'),closeDate:v('opp-close'),owner,ownerName,remarks:v('opp-remarks'),createdAt:_ts(),createdBy:_by()};
   DB.opportunities.push(obj); renderOppList(); updateChips();
   const tt=v('opp-task-title'),te=gv('opp-task-emp'),td=v('opp-task-due');
   if(tt&&te){const tObj={id:nextId('TSK'),title:tt,relType:'Opportunity',refId:obj.id,assigned:te,assignedName:DB.employees.find(e=>e.id===te)?.name||'',priority:v('opp-task-priority')||'High',dueDate:td,status:'Pending',remarks:''};DB.tasks.push(tObj);updateChips();toast(`Opportunity + Task ${tObj.id} saved ✓`);sheetsAutoPush('tasks');}
@@ -2058,7 +2125,7 @@ function renderOppList(){
 function saveTask(){
   const title=v('task-title'); if(!title){toast('Title required','error');return;}
   const assigned=gv('task-assigned'); const assignedName=DB.employees.find(e=>e.id===assigned)?.name||'';
-  const obj={id:gv('task-id'),title,relType:v('task-reltype'),refId:v('task-refid'),assigned,assignedName,priority:v('task-priority'),dueDate:v('task-due'),status:v('task-status'),remarks:v('task-remarks')};
+  const obj={id:gv('task-id'),title,relType:v('task-reltype'),refId:v('task-refid'),assigned,assignedName,priority:v('task-priority'),dueDate:v('task-due'),status:v('task-status'),remarks:v('task-remarks'),createdAt:_ts(),createdBy:_by()};
   DB.tasks.push(obj); renderTaskList(); updateChips();
   clearForm('task'); document.getElementById('task-id').value=nextId('TSK'); toast('Task saved ✓');
   sheetsAutoPush('tasks');
@@ -2086,7 +2153,7 @@ function saveCustomer(data=null){
   const owner=data?data.owner:gv('cust-owner'); const ownerName=DB.employees.find(e=>e.id===owner)?.name||'';
   const custId=data?data.id:(gv('cust-id')||nextId('CUST'));
   const wkData=DB.walkins.find(w=>w.custId===custId)||DB.walkins.find(w=>w.name===name);
-  const obj={id:custId,name,company:data?data.company:(v('cust-company')||wkData?.company||''),mobile:data?data.mobile:(v('cust-mobile')||wkData?.mobile||''),email:data?data.email:(v('cust-email')||wkData?.email||''),city:data?data.city:(v('cust-city')||wkData?.city||''),state:data?data.state:v('cust-state'),gst:data?data.gst:v('cust-gst'),type:data?data.type:v('cust-type'),owner,ownerName,product:data?data.product:'',plan:data?data.plan:'',walkInId:wkData?.id||data?.walkInId||''};
+  const obj={id:custId,name,company:data?data.company:(v('cust-company')||wkData?.company||''),mobile:data?data.mobile:(v('cust-mobile')||wkData?.mobile||''),email:data?data.email:(v('cust-email')||wkData?.email||''),city:data?data.city:(v('cust-city')||wkData?.city||''),state:data?data.state:v('cust-state'),gst:data?data.gst:v('cust-gst'),type:data?data.type:v('cust-type'),owner,ownerName,product:data?data.product:'',plan:data?data.plan:'',walkInId:wkData?.id||data?.walkInId||'',createdAt:_ts(),createdBy:_by()};
   if(DB.customers.find(c=>c.id===obj.id)){toast(`Customer ${obj.id} already exists`,'info');return obj;}
   DB.customers.push(obj); renderCustList(); updateChips();
   if(!data){clearForm('cust');document.getElementById('cust-id').value=nextId('CUST');toast(`Customer ${obj.id} saved ✓`);}
@@ -2877,7 +2944,8 @@ function saveQuotation(){
     gstType:firstB.gstType, billing:firstB.billing,
     blocks:qtBlocks.map(function(b){return Object.assign({},b,{rows:b.rows.slice()});}),
     rows:allRows, subTotal:sub, gst:gst, total:total,
-    sales:sales, salesName:salesName, remarks:_val('qt-remarks')
+    sales:sales, salesName:salesName, remarks:_val('qt-remarks'),
+    createdAt:_ts(), createdBy:_by()
   };
   DB.quotations.push(obj); renderQtList(); updateChips();
   var opp=DB.opportunities.find(function(o){return o.custId===custId&&!['Closed Won','Closed Lost'].includes(o.stage);});
@@ -3019,7 +3087,7 @@ function fillInvoiceFromQuot(){
 function saveInvoice(){
   const quotId=gv('inv-quot'); if(!quotId){toast('Select quotation','error');return;}
   const q=DB.quotations.find(x=>x.id===quotId); if(!q){toast('Invalid quotation','error');return;}
-  const obj={id:gv('inv-no'),date:v('inv-date'),quotId,customerName:q.customerName,customerId:q.customerId,productName:q.productName,planName:q.planName,amount:q.subTotal,gst:q.gst,total:q.total,payStatus:v('inv-paystatus'),payMode:v('inv-paymode'),remarks:v('inv-remarks')};
+  const obj={id:gv('inv-no'),date:v('inv-date'),quotId,customerName:q.customerName,customerId:q.customerId,productName:q.productName,planName:q.planName,amount:q.subTotal,gst:q.gst,total:q.total,payStatus:v('inv-paystatus'),payMode:v('inv-paymode'),remarks:v('inv-remarks'),createdAt:_ts(),createdBy:_by()};
   DB.invoices.push(obj); renderInvList(); updateChips();
   // ── Auto-close: mark Pipeline + Lead as Closed Won ──────────
   const cid=q.customerId;
@@ -3060,7 +3128,7 @@ function saveOnboard(){
   const custId=gv('ob-customer'); if(!custId){toast('Select customer','error');return;}
   const c=DB.customers.find(x=>x.id===custId);
   const mgr=gv('ob-manager'); const mgrName=DB.employees.find(e=>e.id===mgr)?.name||'';
-  const obj={id:gv('ob-id'),customerId:custId,customerName:c?.company||c?.name||'',product:v('ob-product'),plan:v('ob-plan'),users:v('ob-users'),manager:mgr,managerName:mgrName,start:v('ob-start'),golive:v('ob-golive'),status:v('ob-status')};
+  const obj={id:gv('ob-id'),customerId:custId,customerName:c?.company||c?.name||'',product:v('ob-product'),plan:v('ob-plan'),users:v('ob-users'),manager:mgr,managerName:mgrName,start:v('ob-start'),golive:v('ob-golive'),status:v('ob-status'),createdAt:_ts(),createdBy:_by()};
   DB.onboards.push(obj); renderObList(); updateChips();
   clearForm('ob'); document.getElementById('ob-id').value=nextId('CLT'); toast('Client on-boarded ✓');
   sheetsAutoPush('onboards');
@@ -3579,6 +3647,84 @@ function sheetsAutoLoad(){
   );
 }
 // (auto-push is called explicitly in each save/delete function)
+
+// ─── HELPERS: timestamp and current user ─────────────────────────────────────
+function _ts(){ return new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true}); }
+function _by(){ return (_currentUser&&_currentUser.name)||'Admin'; }
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+var _currentUser = null;
+var MASTER_USER = { userId:'sioniqadmin', userPass:'sio@123', name:'Admin User', role:'Admin' };
+
+function doLogin(){
+  var u = (document.getElementById('login-user').value||'').trim();
+  var p = (document.getElementById('login-pass').value||'').trim();
+  var err = document.getElementById('login-err');
+  if(!u||!p){ err.textContent='Enter username and password'; err.style.display='block'; return; }
+
+  // Master login
+  if(u === MASTER_USER.userId && p === MASTER_USER.userPass){
+    _currentUser = MASTER_USER;
+    _afterLogin();
+    return;
+  }
+  // Employee login — check after DB loaded
+  var emp = DB.employees.find(function(e){ return e.userId && e.userId===u && e.userPass===p && e.status==='Active'; });
+  if(emp){
+    _currentUser = { userId:emp.userId, name:emp.name, role:emp.desigName||'Employee', empId:emp.id };
+    _afterLogin();
+    return;
+  }
+  err.textContent = 'Invalid username or password';
+  err.style.display = 'block';
+  document.getElementById('login-pass').value = '';
+}
+
+function _afterLogin(){
+  document.getElementById('login-page').style.display = 'none';
+  // Update sidebar footer
+  var av = document.getElementById('sb-av-init');
+  if(av) av.textContent = (_currentUser.name||'U').charAt(0).toUpperCase();
+  var nm = document.getElementById('sb-user-name');
+  if(nm) nm.textContent = _currentUser.name||'User';
+  var rl = document.getElementById('sb-user-role');
+  if(rl) rl.textContent = _currentUser.role||'Employee';
+  // Update greeting
+  var g = document.getElementById('dash-greeting');
+  if(g){ var h=new Date().getHours(); g.textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(_currentUser.name||'Admin')+' 👋'; }
+}
+
+function doLogout(){
+  _currentUser = null;
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
+}
+
+// ─── SIDEBAR TOGGLE ───────────────────────────────────────────────────────────
+var _sidebarOpen = true;
+function toggleSidebar(){
+  var sb = document.getElementById('sidebar');
+  var overlay = document.getElementById('sb-overlay');
+  var isMobile = window.innerWidth <= 768;
+  if(isMobile){
+    var open = sb.classList.toggle('mobile-open');
+    overlay.style.display = open ? 'block' : 'none';
+  } else {
+    _sidebarOpen = !_sidebarOpen;
+    sb.classList.toggle('collapsed', !_sidebarOpen);
+  }
+}
+window.addEventListener('resize', function(){
+  var sb = document.getElementById('sidebar');
+  var overlay = document.getElementById('sb-overlay');
+  if(window.innerWidth > 768){
+    sb.classList.remove('mobile-open');
+    overlay.style.display = 'none';
+    if(_sidebarOpen) sb.classList.remove('collapsed');
+  }
+});
 
 init();
 </script>
