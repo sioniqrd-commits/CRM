@@ -3375,7 +3375,7 @@ var sheetsHistory = [];
 
 function sheetsInitPage(){
   // Load saved URL
-  var savedUrl = localStorage.getItem('sioniq_sheets_url') || '';
+  var savedUrl = localStorage.getItem('sioniq_sheets_url') || _DEFAULT_SCRIPT_URL;
   var urlEl = document.getElementById('sheets-url');
   if(urlEl) urlEl.value = savedUrl;
 
@@ -3428,8 +3428,11 @@ function sheetsSaveUrl(){
 
 var _APPS_SCRIPT_URL = localStorage.getItem('sioniq_sheets_url') || '';
 
+// ── HARDCODED DEFAULT URL — works on any browser/system without setup ──
+var _DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyE3LwjnXT17otOcAXJvwArkBgVC-dxNLaQ4KCgPvF9GRVIWySz0DezI2hJw174s_XZ/exec';
+
 function _getScriptUrl(){
-  return localStorage.getItem('sioniq_sheets_url') || '';
+  return localStorage.getItem('sioniq_sheets_url') || _DEFAULT_SCRIPT_URL;
 }
 
 // Write path — no-cors POST (fire and forget, no response body readable)
