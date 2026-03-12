@@ -129,6 +129,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   .fg.c2,.fg.c3,.fg.c4{grid-template-columns:1fr!important}
   .kpi-row.c4{grid-template-columns:1fr 1fr!important}
   .kpi-row.c3{grid-template-columns:1fr 1fr!important}
+  .kpi-row.c5{grid-template-columns:1fr 1fr!important}
 }
 #sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499}
 
@@ -148,6 +149,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .kpi-row{display:grid;gap:14px;margin-bottom:20px}
 .kpi-row.c4{grid-template-columns:repeat(4,1fr)}
 .kpi-row.c3{grid-template-columns:repeat(3,1fr)}
+.kpi-row.c5{grid-template-columns:repeat(5,1fr)}
 .kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--rl2);padding:18px 20px;box-shadow:var(--sh1);transition:box-shadow .2s,transform .2s;cursor:default}
 .kpi:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
 .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
@@ -164,6 +166,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .kpi.teal .kpi-val{color:var(--teal)}.kpi.teal .kpi-ico{background:var(--tl);color:var(--teal)}
 .kpi.amber .kpi-val{color:var(--amber)}.kpi.amber .kpi-ico{background:var(--al);color:var(--amber)}
 .kpi.violet .kpi-val{color:var(--violet)}.kpi.violet .kpi-ico{background:var(--vl);color:var(--violet)}
+.kpi.rose .kpi-val{color:var(--rose)}.kpi.rose .kpi-ico{background:var(--rl);color:var(--rose)}
+.kpi.green .kpi-val{color:var(--green)}.kpi.green .kpi-ico{background:var(--gl);color:var(--green)}
 
 /* ── CARD ── */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl2);box-shadow:var(--sh1);overflow:hidden;margin-bottom:16px}
@@ -604,7 +608,7 @@ table.tbl tbody tr:hover td{background:var(--bg)}
 <!-- ═══════════ WALK-INS ═══════════ -->
 <div class="page" id="page-walkins">
   <div class="ph">
-    <div><h1>Campaign Walk-Ins</h1><p>All registered visitors — view details and manage prospect conversion</p></div>
+    <div><h1>Campaign Walk-Ins</h1><p>All registered visitors — manage status and prospect conversion</p></div>
     <div class="ph-actions">
       <button class="btn btn-p" onclick="openWalkinForm()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -613,13 +617,36 @@ table.tbl tbody tr:hover td{background:var(--bg)}
     </div>
   </div>
 
-  <!-- New Walk-In Modal-style inline form (hidden by default) -->
+  <!-- 5 KPI cards -->
+  <div class="kpi-row c5" style="margin-bottom:16px">
+    <div class="kpi blue" style="cursor:pointer" onclick="filterWalkinTable('')"><div class="kpi-top"><div class="kpi-lbl">Total Walk-Ins</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="kpi-val" id="wk-kpi-total">0</div></div>
+    <div class="kpi amber" style="cursor:pointer" onclick="filterWalkinByStatus('Contacted')"><div class="kpi-top"><div class="kpi-lbl">Contacted</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 2 2 0 012 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div></div><div class="kpi-val" id="wk-kpi-contacted">0</div></div>
+    <div class="kpi teal" style="cursor:pointer" onclick="filterWalkinByStatus('Prospect')"><div class="kpi-top"><div class="kpi-lbl">Converted to Prospect</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="wk-kpi-converted">0</div></div>
+    <div class="kpi rose" style="cursor:pointer" onclick="filterWalkinByStatus('New')"><div class="kpi-top"><div class="kpi-lbl">Pending Follow-Up</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="kpi-val" id="wk-kpi-pending">0</div></div>
+    <div class="kpi violet" style="cursor:pointer" onclick="filterWalkinTable('')"><div class="kpi-top"><div class="kpi-lbl">Unique Campaigns</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div></div><div class="kpi-val" id="wk-kpi-camps">0</div></div>
+  </div>
+
+  <!-- Table FIRST -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <div class="card-title">Walk-In Customer Records</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="fi" id="wk-search" placeholder="Search name, company, mobile…" style="width:220px;padding:6px 10px;font-size:11px" oninput="filterWalkinTable(this.value)">
+        <button class="btn btn-s btn-sm" onclick="filterWalkinTable('')">All</button>
+      </div>
+    </div>
+    <div class="tw"><table class="tbl" id="wk-table"><thead><tr>
+      <th>Status</th><th>Cust ID</th><th>Walk-In ID</th><th>Name</th><th>Mobile</th><th>Company</th><th>City</th><th>Product</th><th>Campaign</th><th>Sales Person</th><th>Updated At</th><th>Updated By</th><th>Actions</th>
+    </tr></thead><tbody id="wk-list"><tr><td colspan="13" class="empty" style="padding:32px;text-align:center">No walk-ins yet. Click <strong>"Add New Walk-In"</strong>.</td></tr></tbody></table></div>
+  </div>
+
+  <!-- Form (hidden by default) -->
   <div id="wk-form-panel" style="display:none;margin-bottom:16px">
     <div class="fp">
       <div class="fp-head" style="display:flex;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:10px">
           <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-          <div><div class="fp-title">Register New Walk-In Customer</div><div class="fp-sub">A unique Customer ID will be generated and linked to this visitor</div></div>
+          <div><div class="fp-title">Register New Walk-In Customer</div><div class="fp-sub">Status starts as New. New → Contacted → Prospect (final step, cannot be undone).</div></div>
         </div>
         <button class="btn btn-s btn-sm" onclick="closeWalkinForm()">✕ Close</button>
       </div>
@@ -636,207 +663,309 @@ table.tbl tbody tr:hover td{background:var(--bg)}
           <div class="fgrp"><label class="lbl">City</label><input class="fi" id="wk-city" placeholder="City"></div>
           <div class="fgrp"><label class="lbl">Industry</label><select class="fi" id="wk-industry"><option>Retail</option><option>FMCG</option><option>Manufacturing</option><option>IT Services</option><option>Healthcare</option><option>Education</option><option>Other</option></select></div>
           <div class="fgrp"><label class="lbl">Assigned Sales Person</label><select class="fi" id="wk-sales"></select></div>
-          <div class="fgrp"><label class="lbl">Walk-In Status</label><select class="fi" id="wk-status"><option value="New">New Walk-In</option><option value="Contacted">Contacted</option><option value="Prospect">Convert to Prospect</option></select></div>
+          <div class="fgrp"><label class="lbl">Walk-In Status</label><select class="fi" id="wk-status" disabled><option value="New">New Walk-In</option></select><div style="font-size:10px;color:var(--t3);margin-top:3px">New walk-ins always start as "New"</div></div>
           <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="wk-remarks" placeholder="Notes about the visit, requirements, follow-up needed…"></textarea></div>
         </div>
         <div class="fa">
-          <button class="btn btn-p" onclick="saveWalkin()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Save Walk-In
-          </button>
+          <button class="btn btn-p" onclick="saveWalkin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Save Walk-In</button>
           <button class="btn btn-s" onclick="clearWalkinForm()">Clear</button>
-          <span class="fa-hint">Customer ID is auto-assigned and links all future data for this visitor</span>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Walk-In Stats -->
-  <div class="kpi-row c4" id="wk-stats" style="margin-bottom:16px">
-    <div class="kpi blue"><div class="kpi-top"><div class="kpi-lbl">Total Walk-Ins</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div></div><div class="kpi-val" id="wk-kpi-total">0</div></div>
-    <div class="kpi teal"><div class="kpi-top"><div class="kpi-lbl">Converted to Prospect</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="wk-kpi-converted">0</div></div>
-    <div class="kpi amber"><div class="kpi-top"><div class="kpi-lbl">Pending Follow-Up</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="kpi-val" id="wk-kpi-pending">0</div></div>
-    <div class="kpi violet"><div class="kpi-top"><div class="kpi-lbl">Unique Campaigns</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div></div><div class="kpi-val" id="wk-kpi-camps">0</div></div>
-  </div>
-
-  <!-- Walk-In Table with all customer data -->
-  <div class="card">
-    <div class="card-head">
-      <div class="card-title">Walk-In Customer Records</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input class="fi" id="wk-search" placeholder="Search by name, company, mobile…" style="width:220px;padding:6px 10px;font-size:11px" oninput="filterWalkinTable(this.value)">
-      </div>
-    </div>
-    <div class="tw">
-      <table class="tbl" id="wk-table">
-        <thead>
-          <tr>
-            <th>Cust ID</th>
-            <th>Walk-In ID</th>
-            <th>Name</th>
-            <th>Mobile</th>
-            <th>Email</th>
-            <th>Company</th>
-            <th>City</th>
-            <th>Industry</th>
-            <th>Product Interest</th>
-            <th>Campaign</th>
-            <th>Sales Person</th>
-            <th>Remarks</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="wk-list">
-          <tr><td colspan="14" class="empty" style="padding:32px;text-align:center">
-            No walk-ins registered yet. Click <strong>"Add New Walk-In"</strong> to register a visitor.
-          </td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </div>
 
 <!-- ═══════════ PROSPECTS ═══════════ -->
 <div class="page" id="page-prospects">
-  <div class="ph"><div><h1>Prospects</h1><p>Potential customers not yet fully qualified</p></div></div>
-  <div class="fp"><div class="fp-head"><div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="fp-title">New Prospect</div><div class="fp-sub">Enter Customer ID to auto-fill details from Walk-In records</div></div></div>
-  <div class="fp-body">
-    <div class="fg c3" style="margin-bottom:14px">
-      <div class="fgrp"><label class="lbl">Prospect ID</label><input class="fi mono" id="pro-id" readonly></div>
-      <div class="fgrp">
-        <label class="lbl">Customer ID <span style="font-size:10px;color:var(--green);font-weight:600">✦ Auto-generated</span></label>
-        <input class="fi mono" id="pro-cust-id" readonly style="background:var(--gl);color:var(--green);font-weight:700">
+  <div class="ph">
+    <div><h1>Prospects</h1><p>Potential customers not yet fully qualified</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-p" onclick="toggleProspectForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Prospect
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row c4" style="margin-bottom:16px">
+    <div class="kpi blue" style="cursor:pointer" onclick="filterProspectList('all')"><div class="kpi-top"><div class="kpi-lbl">Total Prospects</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div></div><div class="kpi-val" id="pro-kpi-total">0</div></div>
+    <div class="kpi teal" id="pro-kpi-my-card" style="cursor:pointer" onclick="filterProspectList('mine')"><div class="kpi-top"><div class="kpi-lbl">My Assigned Prospects</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div><div class="kpi-val" id="pro-kpi-mine">0</div></div>
+    <div class="kpi amber" style="cursor:pointer" onclick="filterProspectList('all')"><div class="kpi-top"><div class="kpi-lbl">Total Converted to Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-val" id="pro-kpi-converted">0</div></div>
+    <div class="kpi violet" style="cursor:pointer" onclick="filterProspectList('myconverted')"><div class="kpi-top"><div class="kpi-lbl">My Converted to Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="pro-kpi-myconverted">0</div></div>
+  </div>
+
+  <!-- Table FIRST -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <div class="card-title">Prospects <span id="pro-filter-badge" style="font-size:10px;color:var(--p);font-weight:600;margin-left:6px"></span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-s btn-sm" onclick="filterProspectList('all')">All</button>
+        <button class="btn btn-s btn-sm" onclick="filterProspectList('mine')">Mine</button>
+        <button class="btn btn-s btn-xs" onclick="exportTable('pro-list','Prospects')">Export</button>
       </div>
-      <div class="fgrp"><label class="lbl">Company Name <span class="req">*</span></label><input class="fi" id="pro-company"></div>
-      <div class="fgrp"><label class="lbl">Contact Person <span class="req">*</span></label><input class="fi" id="pro-contact"></div>
-      <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" type="tel" id="pro-mobile"></div>
-      <div class="fgrp"><label class="lbl">Email</label><input class="fi" type="email" id="pro-email"></div>
-      <div class="fgrp"><label class="lbl">City</label><input class="fi" id="pro-city"></div>
-      <div class="fgrp"><label class="lbl">Industry</label><select class="fi" id="pro-industry"><option>Retail</option><option>FMCG</option><option>Manufacturing</option><option>IT Services</option><option>Healthcare</option><option>Other</option></select></div>
-      <div class="fgrp"><label class="lbl">Lead Source</label><select class="fi" id="pro-source"><option>Exhibition</option><option>Digital Marketing</option><option>Referral</option><option>Cold Calling</option><option>Website</option></select></div>
-      <div class="fgrp"><label class="lbl">Assigned Sales Person</label><select class="fi" id="pro-sales"></select></div>
-      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="pro-remarks"></textarea></div>
     </div>
-    <!-- Quick Task assign from Prospect -->
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
-      <div class="fg c4" style="margin-bottom:8px">
-        <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="pro-task-title" placeholder="e.g. Follow up call"></div>
-        <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="pro-task-emp"></select></div>
-        <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="pro-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
-        <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="pro-task-due"></div>
+    <div class="tw"><table class="tbl"><thead><tr>
+      <th>ID</th><th>Cust ID</th><th>Company</th><th>Contact</th><th>Mobile</th><th>Industry</th><th>Source</th><th>Sales Person</th><th>Created At</th><th>Actions</th>
+    </tr></thead><tbody id="pro-list"><tr><td colspan="10" class="empty">No prospects yet</td></tr></tbody></table></div>
+  </div>
+
+  <!-- Form (hidden by default) -->
+  <div id="pro-form-panel" style="display:none;margin-bottom:16px">
+    <div class="fp"><div class="fp-head" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div><div class="fp-title">New Prospect</div><div class="fp-sub">Enter Customer ID to auto-fill details from Walk-In records</div></div>
       </div>
+      <button class="btn btn-s btn-sm" onclick="toggleProspectForm()">✕ Close</button>
     </div>
-    <div class="fa">
-      <button class="btn btn-p" onclick="saveProspect()">Save Prospect</button>
-      <button class="btn btn-t" onclick="convertProspectToLead()">Convert to Lead</button>
-      <button class="btn btn-s" onclick="clearProspectForm()">Clear</button>
-    </div>
-  </div></div>
-  <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Cust ID</th><th>Company</th><th>Contact</th><th>Mobile</th><th>Industry</th><th>Sales</th><th>Actions</th></tr></thead><tbody id="pro-list"><tr><td colspan="8" class="empty">No prospects yet</td></tr></tbody></table></div></div>
+    <div class="fp-body">
+      <div class="fg c3" style="margin-bottom:14px">
+        <div class="fgrp"><label class="lbl">Prospect ID</label><input class="fi mono" id="pro-id" readonly></div>
+        <div class="fgrp"><label class="lbl">Customer ID <span style="font-size:10px;color:var(--green);font-weight:600">✦ Auto-generated</span></label><input class="fi mono" id="pro-cust-id" readonly style="background:var(--gl);color:var(--green);font-weight:700"></div>
+        <div class="fgrp"><label class="lbl">Company Name <span class="req">*</span></label><input class="fi" id="pro-company"></div>
+        <div class="fgrp"><label class="lbl">Contact Person <span class="req">*</span></label><input class="fi" id="pro-contact"></div>
+        <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" type="tel" id="pro-mobile"></div>
+        <div class="fgrp"><label class="lbl">Email</label><input class="fi" type="email" id="pro-email"></div>
+        <div class="fgrp"><label class="lbl">City</label><input class="fi" id="pro-city"></div>
+        <div class="fgrp"><label class="lbl">Industry</label><select class="fi" id="pro-industry"><option>Retail</option><option>FMCG</option><option>Manufacturing</option><option>IT Services</option><option>Healthcare</option><option>Other</option></select></div>
+        <div class="fgrp"><label class="lbl">Lead Source</label><select class="fi" id="pro-source"><option>Exhibition</option><option>Digital Marketing</option><option>Referral</option><option>Cold Calling</option><option>Website</option></select></div>
+        <div class="fgrp"><label class="lbl">Assigned Sales Person</label><select class="fi" id="pro-sales"></select></div>
+        <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="pro-remarks"></textarea></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
+        <div class="fg c4" style="margin-bottom:8px">
+          <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="pro-task-title" placeholder="e.g. Follow up call"></div>
+          <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="pro-task-emp"></select></div>
+          <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="pro-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+          <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="pro-task-due"></div>
+        </div>
+      </div>
+      <div class="fa">
+        <button class="btn btn-p" onclick="saveProspect()">Save Prospect</button>
+        <button class="btn btn-t" onclick="convertProspectToLead()">Convert to Lead</button>
+        <button class="btn btn-s" onclick="clearProspectForm()">Clear</button>
+      </div>
+    </div></div>
+  </div>
 </div>
 
 <!-- ═══════════ LEADS ═══════════ -->
 <div class="page" id="page-leads">
-  <div class="ph"><div><h1>Leads</h1><p>Qualified prospects with active product interest</p></div><div class="ph-actions"><button class="btn btn-s btn-sm" onclick="exportTable('lead-list','Leads')">Export</button></div></div>
-  <div class="fp"><div class="fp-head"><div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="fp-title">New Lead</div><div class="fp-sub">Enter Customer ID to auto-fill — or link a Prospect</div></div></div>
-  <div class="fp-body">
-    <div class="fg c3">
-      <div class="fgrp"><label class="lbl">Lead ID</label><input class="fi mono" id="lead-id" readonly></div>
-      <div class="fgrp">
-        <label class="lbl">Customer ID <span style="font-size:10px;color:var(--t3);font-weight:400">(type to auto-fill)</span></label>
-        <div style="position:relative">
-          <input class="fi mono" id="lead-cust-id" placeholder="e.g. CUST-001" oninput="lookupCustForLead(this.value)" autocomplete="off">
-          <div id="lead-cust-hint" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:0 0 var(--r) var(--r);z-index:100;font-size:12px;max-height:160px;overflow-y:auto;box-shadow:var(--sh2)"></div>
+  <div class="ph">
+    <div><h1>Leads</h1><p>Qualified prospects with active product interest</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-s btn-sm" onclick="exportTable('lead-list','Leads')">Export</button>
+      <button class="btn btn-p" onclick="toggleLeadForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Lead
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row c4" style="margin-bottom:16px">
+    <div class="kpi blue" style="cursor:pointer" onclick="filterLeadList('all')"><div class="kpi-top"><div class="kpi-lbl">Total Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-val" id="ld-kpi-total">0</div></div>
+    <div class="kpi teal" style="cursor:pointer" onclick="filterLeadList('mine')"><div class="kpi-top"><div class="kpi-lbl">My Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div><div class="kpi-val" id="ld-kpi-mine">0</div></div>
+    <div class="kpi amber" style="cursor:pointer" onclick="filterLeadList('open')"><div class="kpi-top"><div class="kpi-lbl">Open Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="kpi-val" id="ld-kpi-open">0</div></div>
+    <div class="kpi green" style="cursor:pointer" onclick="filterLeadList('pipeline')"><div class="kpi-top"><div class="kpi-lbl">Moved to Pipeline</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="ld-kpi-pipeline">0</div></div>
+  </div>
+
+  <!-- Table FIRST -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <div class="card-title">Leads <span id="ld-filter-badge" style="font-size:10px;color:var(--p);font-weight:600;margin-left:6px"></span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-s btn-sm" onclick="filterLeadList('all')">All</button>
+        <button class="btn btn-s btn-sm" onclick="filterLeadList('mine')">Mine</button>
+      </div>
+    </div>
+    <div class="tw"><table class="tbl"><thead><tr>
+      <th>ID</th><th>Cust ID</th><th>Company</th><th>Product</th><th>Assigned</th><th>Value</th><th>Close Date</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="lead-list"><tr><td colspan="9" class="empty">No leads yet</td></tr></tbody></table></div>
+  </div>
+
+  <!-- Form (hidden by default) -->
+  <div id="lead-form-panel" style="display:none;margin-bottom:16px">
+    <div class="fp"><div class="fp-head" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div><div class="fp-title">New Lead</div><div class="fp-sub">Enter Customer ID to auto-fill — or link a Prospect</div></div>
+      </div>
+      <button class="btn btn-s btn-sm" onclick="toggleLeadForm()">✕ Close</button>
+    </div>
+    <div class="fp-body">
+      <div class="fg c3">
+        <div class="fgrp"><label class="lbl">Lead ID</label><input class="fi mono" id="lead-id" readonly></div>
+        <div class="fgrp"><label class="lbl">Customer ID <span style="font-size:10px;color:var(--t3);font-weight:400">(type to auto-fill)</span></label>
+          <div style="position:relative">
+            <input class="fi mono" id="lead-cust-id" placeholder="e.g. CUST-001" oninput="lookupCustForLead(this.value)" autocomplete="off">
+            <div id="lead-cust-hint" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:0 0 var(--r) var(--r);z-index:100;font-size:12px;max-height:160px;overflow-y:auto;box-shadow:var(--sh2)"></div>
+          </div>
+        </div>
+        <div class="fgrp"><label class="lbl">Prospect</label><select class="fi" id="lead-prospect" onchange="fillLeadFromProspect()"><option value="">-- Select Prospect --</option></select></div>
+        <div class="fgrp"><label class="lbl">Company Name <span class="req">*</span></label><input class="fi" id="lead-company"></div>
+        <div class="fgrp"><label class="lbl">Contact Person</label><input class="fi" id="lead-contact" readonly></div>
+        <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" id="lead-mobile" readonly></div>
+        <div class="fgrp"><label class="lbl">Product Interest <span class="req">*</span></label><select class="fi" id="lead-product"></select></div>
+        <div class="fgrp"><label class="lbl">Lead Source</label><select class="fi" id="lead-source"><option>Exhibition</option><option>Digital Marketing</option><option>Referral</option><option>Cold Calling</option><option>Website</option></select></div>
+        <div class="fgrp"><label class="lbl">Lead Status <span class="req">*</span></label><select class="fi" id="lead-status"></select></div>
+        <div class="fgrp"><label class="lbl">Assigned To <span class="req">*</span></label><select class="fi" id="lead-assigned"></select></div>
+        <div class="fgrp"><label class="lbl">Expected Deal Value (₹)</label><input class="fi" type="number" id="lead-value" placeholder="0"></div>
+        <div class="fgrp"><label class="lbl">Expected Closing Date</label><input class="fi" type="date" id="lead-close"></div>
+        <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="lead-remarks"></textarea></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
+        <div class="fg c4" style="margin-bottom:8px">
+          <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="lead-task-title" placeholder="e.g. Demo scheduling"></div>
+          <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="lead-task-emp"></select></div>
+          <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="lead-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+          <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="lead-task-due"></div>
         </div>
       </div>
-      <div class="fgrp"><label class="lbl">Prospect</label><select class="fi" id="lead-prospect" onchange="fillLeadFromProspect()"><option value="">-- Select Prospect --</option></select></div>
-      <div class="fgrp"><label class="lbl">Company Name <span class="req">*</span></label><input class="fi" id="lead-company"></div>
-      <div class="fgrp"><label class="lbl">Contact Person</label><input class="fi" id="lead-contact" readonly></div>
-      <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" id="lead-mobile" readonly></div>
-      <div class="fgrp"><label class="lbl">Product Interest <span class="req">*</span></label><select class="fi" id="lead-product"></select></div>
-      <div class="fgrp"><label class="lbl">Lead Source</label><select class="fi" id="lead-source"><option>Exhibition</option><option>Digital Marketing</option><option>Referral</option><option>Cold Calling</option><option>Website</option></select></div>
-      <div class="fgrp"><label class="lbl">Lead Status <span class="req">*</span></label><select class="fi" id="lead-status"></select></div>
-      <div class="fgrp"><label class="lbl">Assigned To <span class="req">*</span></label><select class="fi" id="lead-assigned"></select></div>
-      <div class="fgrp"><label class="lbl">Expected Deal Value (₹)</label><input class="fi" type="number" id="lead-value" placeholder="0"></div>
-      <div class="fgrp"><label class="lbl">Expected Closing Date</label><input class="fi" type="date" id="lead-close"></div>
-      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="lead-remarks"></textarea></div>
-    </div>
-    <!-- Quick Task assign from Lead -->
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
-      <div class="fg c4" style="margin-bottom:8px">
-        <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="lead-task-title" placeholder="e.g. Demo scheduling"></div>
-        <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="lead-task-emp"></select></div>
-        <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="lead-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
-        <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="lead-task-due"></div>
+      <div class="fa">
+        <button class="btn btn-p" onclick="saveLead()">Save Lead</button>
+        <button class="btn btn-t" onclick="convertLeadToPipeline()">Move to Pipeline</button>
+        <button class="btn btn-s" onclick="clearLeadForm()">Clear</button>
       </div>
-    </div>
-    <div class="fa"><button class="btn btn-p" onclick="saveLead()">Save Lead</button><button class="btn btn-t" onclick="convertLeadToPipeline()">Move to Pipeline</button><button class="btn btn-s" onclick="clearLeadForm()">Clear</button></div>
-  </div></div>
-  <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Cust ID</th><th>Company</th><th>Product</th><th>Assigned</th><th>Value</th><th>Close Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="lead-list"><tr><td colspan="9" class="empty">No leads yet</td></tr></tbody></table></div></div>
+    </div></div>
+  </div>
 </div>
 
 <!-- ═══════════ PIPELINE ═══════════ -->
 <div class="page" id="page-pipeline">
-  <div class="ph"><div><h1>Sales Pipeline</h1><p>Track deal stages and win probability</p></div></div>
-  <div class="fp"><div class="fp-head"><div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="fp-title">New Opportunity</div><div class="fp-sub">Customer must be in an active Lead — enter Customer ID to validate and auto-fill</div></div></div>
-  <div class="fp-body">
-    <div id="opp-validation-msg" style="display:none;padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:12px;font-weight:600"></div>
-    <div class="fg c3">
-      <div class="fgrp"><label class="lbl">Opportunity ID</label><input class="fi mono" id="opp-id" readonly></div>
-      <div class="fgrp">
-        <label class="lbl">Customer ID <span class="req">*</span> <span style="font-size:10px;color:var(--t3);font-weight:400">(must be in active Lead)</span></label>
-        <div style="position:relative">
-          <input class="fi mono" id="opp-cust-id" placeholder="e.g. CUST-001" oninput="lookupCustForPipeline(this.value)" autocomplete="off">
-          <div id="opp-cust-hint" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:0 0 var(--r) var(--r);z-index:100;font-size:12px;max-height:160px;overflow-y:auto;box-shadow:var(--sh2)"></div>
+  <div class="ph">
+    <div><h1>Sales Pipeline</h1><p>Track deal stages and win probability</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-p" onclick="togglePipelineForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Opportunity
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row c4" style="margin-bottom:16px">
+    <div class="kpi blue"><div class="kpi-top"><div class="kpi-lbl">Total Opportunities</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="5" height="10" rx="1"/><rect x="9.5" y="4" width="5" height="13" rx="1"/><rect x="17" y="9" width="5" height="8" rx="1"/></svg></div></div><div class="kpi-val" id="pl-kpi-total">0</div></div>
+    <div class="kpi teal"><div class="kpi-top"><div class="kpi-lbl">Total Pipeline Value</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div><div class="kpi-val" id="pl-kpi-value">₹0</div></div>
+    <div class="kpi green"><div class="kpi-top"><div class="kpi-lbl">Closed Won</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="pl-kpi-won">0</div></div>
+    <div class="kpi rose"><div class="kpi-top"><div class="kpi-lbl">Closed Lost</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div></div><div class="kpi-val" id="pl-kpi-lost">0</div></div>
+  </div>
+
+  <!-- Table FIRST -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <div class="card-title">Opportunities</div>
+    </div>
+    <div class="tw"><table class="tbl"><thead><tr>
+      <th>ID</th><th>Cust ID</th><th>Customer</th><th>Product</th><th>Deal Value</th><th>Stage</th><th>Prob%</th><th>Close Date</th><th>Actions</th>
+    </tr></thead><tbody id="opp-list"><tr><td colspan="9" class="empty">No opportunities yet</td></tr></tbody></table></div>
+  </div>
+
+  <!-- Form (hidden by default) -->
+  <div id="pipeline-form-panel" style="display:none;margin-bottom:16px">
+    <div class="fp"><div class="fp-head" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div><div class="fp-title">New Opportunity</div><div class="fp-sub">Customer must be in an active Lead — enter Customer ID to validate and auto-fill</div></div>
+      </div>
+      <button class="btn btn-s btn-sm" onclick="togglePipelineForm()">✕ Close</button>
+    </div>
+    <div class="fp-body">
+      <div id="opp-validation-msg" style="display:none;padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:12px;font-weight:600"></div>
+      <div class="fg c3">
+        <div class="fgrp"><label class="lbl">Opportunity ID</label><input class="fi mono" id="opp-id" readonly></div>
+        <div class="fgrp"><label class="lbl">Customer ID <span class="req">*</span></label>
+          <div style="position:relative">
+            <input class="fi mono" id="opp-cust-id" placeholder="e.g. CUST-001" oninput="lookupCustForPipeline(this.value)" autocomplete="off">
+            <div id="opp-cust-hint" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--p);border-radius:0 0 var(--r) var(--r);z-index:100;font-size:12px;max-height:160px;overflow-y:auto;box-shadow:var(--sh2)"></div>
+          </div>
+        </div>
+        <div class="fgrp"><label class="lbl">Lead</label><select class="fi" id="opp-lead" onchange="fillOppFromLead()"><option value="">-- Select Lead --</option></select></div>
+        <div class="fgrp"><label class="lbl">Customer Name <span class="req">*</span></label><input class="fi" id="opp-customer"></div>
+        <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" id="opp-mobile" readonly></div>
+        <div class="fgrp"><label class="lbl">Company</label><input class="fi" id="opp-company" readonly></div>
+        <div class="fgrp"><label class="lbl">Product <span class="req">*</span></label><select class="fi" id="opp-product"></select></div>
+        <div class="fgrp"><label class="lbl">Deal Value (₹) <span class="req">*</span></label><input class="fi" type="number" id="opp-value" placeholder="0"></div>
+        <div class="fgrp"><label class="lbl">Stage <span class="req">*</span></label><select class="fi" id="opp-stage"><option>Qualification</option><option>Demo</option><option>Proposal</option><option>Negotiation</option><option>Closed Won</option><option>Closed Lost</option></select></div>
+        <div class="fgrp"><label class="lbl">Probability (%)</label><input class="fi" type="number" id="opp-prob" placeholder="50" min="0" max="100"></div>
+        <div class="fgrp"><label class="lbl">Expected Close Date</label><input class="fi" type="date" id="opp-close"></div>
+        <div class="fgrp"><label class="lbl">Owner</label><select class="fi" id="opp-owner"></select></div>
+        <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="opp-remarks"></textarea></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
+        <div class="fg c4">
+          <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="opp-task-title" placeholder="e.g. Send proposal"></div>
+          <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="opp-task-emp"></select></div>
+          <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="opp-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+          <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="opp-task-due"></div>
         </div>
       </div>
-      <div class="fgrp"><label class="lbl">Lead</label><select class="fi" id="opp-lead" onchange="fillOppFromLead()"><option value="">-- Select Lead --</option></select></div>
-      <div class="fgrp"><label class="lbl">Customer Name <span class="req">*</span></label><input class="fi" id="opp-customer"></div>
-      <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" id="opp-mobile" readonly></div>
-      <div class="fgrp"><label class="lbl">Company</label><input class="fi" id="opp-company" readonly></div>
-      <div class="fgrp"><label class="lbl">Product <span class="req">*</span></label><select class="fi" id="opp-product"></select></div>
-      <div class="fgrp"><label class="lbl">Deal Value (₹) <span class="req">*</span></label><input class="fi" type="number" id="opp-value" placeholder="0"></div>
-      <div class="fgrp"><label class="lbl">Stage <span class="req">*</span></label><select class="fi" id="opp-stage"><option>Qualification</option><option>Demo</option><option>Proposal</option><option>Negotiation</option><option>Closed Won</option><option>Closed Lost</option></select></div>
-      <div class="fgrp"><label class="lbl">Probability (%)</label><input class="fi" type="number" id="opp-prob" placeholder="50" min="0" max="100"></div>
-      <div class="fgrp"><label class="lbl">Expected Close Date</label><input class="fi" type="date" id="opp-close"></div>
-      <div class="fgrp"><label class="lbl">Owner</label><select class="fi" id="opp-owner"></select></div>
-      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="opp-remarks"></textarea></div>
-    </div>
-    <!-- Quick Task assign from Pipeline -->
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Assign Follow-Up Task</div>
-      <div class="fg c4" style="margin-bottom:8px">
-        <div class="fgrp"><label class="lbl">Task Title</label><input class="fi" id="opp-task-title" placeholder="e.g. Send proposal"></div>
-        <div class="fgrp"><label class="lbl">Assign To</label><select class="fi" id="opp-task-emp"></select></div>
-        <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="opp-task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
-        <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="opp-task-due"></div>
-      </div>
-    </div>
-    <div class="fa"><button class="btn btn-p" onclick="saveOpportunity()">Save Opportunity</button><button class="btn btn-s" onclick="clearOppForm()">Clear</button></div>
-  </div></div>
-  <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Cust ID</th><th>Customer</th><th>Product</th><th>Deal Value</th><th>Stage</th><th>Prob%</th><th>Close Date</th><th>Actions</th></tr></thead><tbody id="opp-list"><tr><td colspan="9" class="empty">No opportunities yet</td></tr></tbody></table></div></div>
+      <div class="fa"><button class="btn btn-p" onclick="saveOpportunity()">Save Opportunity</button><button class="btn btn-s" onclick="clearOppForm()">Clear</button></div>
+    </div></div>
+  </div>
 </div>
 
 <!-- ═══════════ TASKS ═══════════ -->
 <div class="page" id="page-tasks">
-  <div class="ph"><div><h1>Tasks</h1><p>Follow-ups and internal assignments</p></div></div>
-  <div class="fp"><div class="fp-head"><div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div><div class="fp-title">New Task</div></div></div>
-  <div class="fp-body"><div class="fg c3">
-    <div class="fgrp"><label class="lbl">Task ID</label><input class="fi mono" id="task-id" readonly></div>
-    <div class="fgrp"><label class="lbl">Task Title <span class="req">*</span></label><input class="fi" id="task-title" placeholder="e.g. Follow up with GreenMart"></div>
-    <div class="fgrp"><label class="lbl">Related To</label><select class="fi" id="task-reltype"><option>Lead</option><option>Customer</option><option>Opportunity</option><option>Implementation</option></select></div>
-    <div class="fgrp"><label class="lbl">Reference ID</label><input class="fi" id="task-refid" placeholder="LD-XXXX"></div>
-    <div class="fgrp"><label class="lbl">Assigned To <span class="req">*</span></label><select class="fi" id="task-assigned"></select></div>
-    <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
-    <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="task-due"></div>
-    <div class="fgrp"><label class="lbl">Status</label><select class="fi" id="task-status"><option>Pending</option><option>Completed</option></select></div>
-    <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="task-remarks"></textarea></div>
+  <div class="ph">
+    <div><h1>Tasks</h1><p>Follow-ups and internal assignments</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-p" onclick="toggleTaskForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Task
+      </button>
+    </div>
   </div>
-  <div class="fa"><button class="btn btn-p" onclick="saveTask()">Save Task</button><button class="btn btn-s" onclick="clearForm('task')">Clear</button></div></div></div>
-  <div class="card"><div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Title</th><th>Assigned</th><th>Priority</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="task-list"><tr><td colspan="7" class="empty">No tasks yet</td></tr></tbody></table></div></div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row c4" style="margin-bottom:16px">
+    <div class="kpi blue" style="cursor:pointer" onclick="filterTaskList('all')"><div class="kpi-top"><div class="kpi-lbl">Total Tasks</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div></div><div class="kpi-val" id="tk-kpi-total">0</div></div>
+    <div class="kpi teal" style="cursor:pointer" onclick="filterTaskList('mine')"><div class="kpi-top"><div class="kpi-lbl">My Tasks</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div></div><div class="kpi-val" id="tk-kpi-mine">0</div></div>
+    <div class="kpi amber" style="cursor:pointer" onclick="filterTaskList('pending')"><div class="kpi-top"><div class="kpi-lbl">Pending</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div><div class="kpi-val" id="tk-kpi-pending">0</div></div>
+    <div class="kpi green" style="cursor:pointer" onclick="filterTaskList('done')"><div class="kpi-top"><div class="kpi-lbl">Completed</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="tk-kpi-done">0</div></div>
+  </div>
+
+  <!-- Table FIRST -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head">
+      <div class="card-title">Tasks <span id="tk-filter-badge" style="font-size:10px;color:var(--p);font-weight:600;margin-left:6px"></span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-s btn-sm" onclick="filterTaskList('all')">All</button>
+        <button class="btn btn-s btn-sm" onclick="filterTaskList('mine')">Mine</button>
+        <button class="btn btn-s btn-sm" onclick="filterTaskList('pending')">Pending</button>
+      </div>
+    </div>
+    <div class="tw"><table class="tbl"><thead><tr>
+      <th>ID</th><th>Title</th><th>Related To</th><th>Assigned</th><th>Priority</th><th>Due Date</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="task-list"><tr><td colspan="8" class="empty">No tasks yet</td></tr></tbody></table></div>
+  </div>
+
+  <!-- Form (hidden by default) -->
+  <div id="task-form-panel" style="display:none;margin-bottom:16px">
+    <div class="fp"><div class="fp-head" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="fp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div><div class="fp-title">New Task</div></div>
+      </div>
+      <button class="btn btn-s btn-sm" onclick="toggleTaskForm()">✕ Close</button>
+    </div>
+    <div class="fp-body"><div class="fg c3">
+      <div class="fgrp"><label class="lbl">Task ID</label><input class="fi mono" id="task-id" readonly></div>
+      <div class="fgrp"><label class="lbl">Task Title <span class="req">*</span></label><input class="fi" id="task-title" placeholder="e.g. Follow up with GreenMart"></div>
+      <div class="fgrp"><label class="lbl">Related To</label><select class="fi" id="task-reltype"><option>Lead</option><option>Customer</option><option>Opportunity</option><option>Implementation</option></select></div>
+      <div class="fgrp"><label class="lbl">Reference ID</label><input class="fi" id="task-refid" placeholder="LD-XXXX"></div>
+      <div class="fgrp"><label class="lbl">Assigned To <span class="req">*</span></label><select class="fi" id="task-assigned"></select></div>
+      <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="task-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="task-due"></div>
+      <div class="fgrp"><label class="lbl">Status</label><select class="fi" id="task-status"><option>Pending</option><option>Completed</option></select></div>
+      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="task-remarks"></textarea></div>
+    </div>
+    <div class="fa"><button class="btn btn-p" onclick="saveTask()">Save Task</button><button class="btn btn-s" onclick="clearForm('task')">Clear</button></div></div></div>
+  </div>
 </div>
 
 <!-- ═══════════ CUSTOMERS ═══════════ -->
@@ -1100,15 +1229,55 @@ table.tbl tbody tr:hover td{background:var(--bg)}
 
 <!-- ═══════════ REPORTS ═══════════ -->
 <div class="page" id="page-reports">
-  <div class="ph"><div><h1>Reports & Analytics</h1><p>Live data from your CRM records</p></div></div>
-  <div class="kpi-row c4">
+  <div class="ph"><div><h1>Reports & Analytics</h1><p>Performance insights across sales, campaigns, tasks and team</p></div>
+    <div class="ph-actions"><button class="btn btn-p btn-sm" onclick="renderAdvancedReports()">🔄 Refresh</button></div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="kpi-row c4" style="margin-bottom:20px">
     <div class="kpi blue"><div class="kpi-top"><div class="kpi-lbl">Total Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-val" id="rpt-leads">0</div></div>
     <div class="kpi teal"><div class="kpi-top"><div class="kpi-lbl">Won Deals</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="rpt-won">0</div></div>
     <div class="kpi amber"><div class="kpi-top"><div class="kpi-lbl">Total Invoice Value</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div><div class="kpi-val" id="rpt-revenue">₹0</div></div>
     <div class="kpi violet"><div class="kpi-top"><div class="kpi-lbl">Implementations</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8"/></svg></div></div><div class="kpi-val" id="rpt-impls">0</div></div>
   </div>
+
+  <!-- Advanced Reports Grid -->
+  <div class="g2" style="margin-bottom:18px">
+    <!-- Employee Performance -->
+    <div class="card"><div class="card-head"><div class="card-title">👤 Employee Performance</div></div>
+      <div class="card-body" id="rpt-emp-perf" style="padding:0">
+        <table class="tbl"><thead><tr><th>Employee</th><th>Leads Assigned</th><th>Converted</th><th>Conv%</th><th>Tasks</th><th>Done</th><th>On-Time%</th></tr></thead>
+        <tbody id="rpt-emp-body"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+    <!-- Task Performance -->
+    <div class="card"><div class="card-head"><div class="card-title">✅ Task Status — User Wise</div></div>
+      <div class="card-body" style="padding:0">
+        <table class="tbl"><thead><tr><th>Employee</th><th>Total Tasks</th><th>Pending</th><th>Completed</th><th>On Time</th><th>Overdue</th></tr></thead>
+        <tbody id="rpt-task-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign Performance -->
+  <div class="card" style="margin-bottom:18px"><div class="card-head"><div class="card-title">📢 Campaign Performance — Walk-In → Prospect → Lead → Won</div></div>
+    <div class="card-body" style="padding:0">
+      <table class="tbl"><thead><tr><th>Campaign</th><th>Walk-Ins</th><th>Expected Leads</th><th>Prospects</th><th>Leads</th><th>Reach%</th><th>Won Deals</th><th>Conv%</th></tr></thead>
+      <tbody id="rpt-camp-body"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- Sales Conversion by Employee -->
+  <div class="card" style="margin-bottom:18px"><div class="card-head"><div class="card-title">💰 Sales Conversion — Pipeline by Employee</div></div>
+    <div class="card-body" style="padding:0">
+      <table class="tbl"><thead><tr><th>Sales Person</th><th>Leads</th><th>Pipeline Value</th><th>Won Value</th><th>Lost</th><th>Win Rate</th></tr></thead>
+      <tbody id="rpt-sales-conv-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- Standard Reports -->
   <div class="g2">
-    <div class="card"><div class="card-head"><div class="card-title">Sales Reports</div></div><div class="card-body" id="rpt-sales-body">
+    <div class="card"><div class="card-head"><div class="card-title">Sales Reports</div></div><div class="card-body">
       <div class="report-row" onclick="showReportModal('leads')"><div><div class="rr-title">Lead Pipeline Report</div><div class="rr-sub">All leads with stage and value</div></div><button class="btn btn-p btn-xs">View</button></div>
       <div class="report-row" onclick="showReportModal('pipeline')"><div><div class="rr-title">Opportunity Report</div><div class="rr-sub">Pipeline stages and deal values</div></div><button class="btn btn-p btn-xs">View</button></div>
       <div class="report-row" onclick="showReportModal('quotations')"><div><div class="rr-title">Quotations Report</div><div class="rr-sub">All generated quotations</div></div><button class="btn btn-p btn-xs">View</button></div>
@@ -1121,7 +1290,9 @@ table.tbl tbody tr:hover td{background:var(--bg)}
       <div class="report-row" onclick="showReportModal('handover')"><div><div class="rr-title">Handover Report</div><div class="rr-sub">Clients moved to support</div></div><button class="btn btn-t btn-xs">View</button></div>
     </div></div>
   </div>
-  <div class="card"><div class="card-head"><div class="card-title">Lead Lifecycle Flow</div></div><div class="card-body"><div class="wf">
+
+  <!-- Lead Lifecycle -->
+  <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Lead Lifecycle Flow</div></div><div class="card-body"><div class="wf">
     <div class="wf-step"><div class="wf-node" style="background:var(--pl);color:var(--p)">Campaign</div><span class="wf-arr">→</span></div>
     <div class="wf-step"><div class="wf-node" style="background:var(--vl);color:var(--violet)">Walk-In</div><span class="wf-arr">→</span></div>
     <div class="wf-step"><div class="wf-node" style="background:var(--tl);color:var(--teal)">Prospect</div><span class="wf-arr">→</span></div>
@@ -1131,12 +1302,9 @@ table.tbl tbody tr:hover td{background:var(--bg)}
     <div class="wf-step"><div class="wf-node" style="background:var(--tl);color:var(--teal)">Invoice</div><span class="wf-arr">→</span></div>
     <div class="wf-step"><div class="wf-node" style="background:var(--gl);color:var(--green)">Customer</div><span class="wf-arr">→</span></div>
     <div class="wf-step"><div class="wf-node" style="background:var(--al);color:var(--amber)">On-Board</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--pl);color:var(--p)">Impl.</div><span class="wf-arr">→</span></div>
     <div class="wf-step"><div class="wf-node" style="background:var(--gl);color:var(--green)">Handover</div></div>
   </div></div></div>
 </div>
-
-  </div><!-- /content -->
 
 <!-- ═══════════ SHEETS SYNC ═══════════ -->
 <div class="page" id="page-sheets">
@@ -1322,6 +1490,11 @@ function nav(id, el){
   if(id==='dashboard') renderDashboard();
   if(id==='reports') renderReports();
   if(id==='sheets') sheetsInitPage();
+  if(id==='walkins'){ renderWalkinList(); renderWalkinStats(); }
+  if(id==='prospects'){ renderProspectList(); renderProspectStats(); }
+  if(id==='leads'){ renderLeadList(); renderLeadStats(); }
+  if(id==='pipeline'){ renderOppList(); renderOppStats(); }
+  if(id==='tasks'){ renderTaskList(); renderTaskStats(); }
 }
 
 function switchSub(el,prefix){
@@ -1756,7 +1929,6 @@ function saveWalkin(){
   sheetsAutoPush('walkins');
 }
 function _convertWalkinToProspect(w){
-  // Avoid duplicate
   if(DB.prospects.find(p=>p.custId===w.custId)) return;
   const pObj={
     id:nextId('PRO'), custId:w.custId,
@@ -1764,74 +1936,90 @@ function _convertWalkinToProspect(w){
     mobile:w.mobile, email:w.email,
     city:w.city, industry:w.industry||'Other',
     source:'Exhibition', sales:w.sales, salesName:w.salesName,
-    remarks:w.remarks
+    remarks:w.remarks, createdAt:_ts(), createdBy:_by()
   };
   DB.prospects.push(pObj);
-  renderProspectList();
+  renderProspectList(); renderProspectStats();
   updateChips();
   sheetsAutoPush('prospects');
 }
 function updateWalkinStatus(wId, newStatus){
   const w=DB.walkins.find(x=>x.id===wId);
   if(!w) return;
+  // Validation: cannot go backwards, cannot change if already Prospect
+  if(w.status==='Prospect'){
+    toast('Status is Prospect — final step, cannot be changed','error');
+    renderWalkinList(); return;
+  }
+  if(newStatus==='New' && w.status==='Contacted'){
+    toast('Cannot revert from Contacted to New','error');
+    renderWalkinList(); return;
+  }
   const old=w.status;
   w.status=newStatus;
+  w.updatedAt=_ts();
+  w.updatedBy=_by();
   if(newStatus==='Prospect' && old!=='Prospect'){
     _convertWalkinToProspect(w);
     toast(`${w.name} converted to Prospect ✓`,'success');
   } else {
     toast(`Status updated to "${newStatus}"`,'info');
   }
-  renderWalkinList();
-  renderWalkinStats();
-  updateChips();
+  renderWalkinList(); renderWalkinStats(); updateChips();
+  sheetsAutoPush('walkins');
 }
 function renderWalkinStats(){
   const total=DB.walkins.length;
+  const contacted=DB.walkins.filter(w=>w.status==='Contacted').length;
   const converted=DB.walkins.filter(w=>w.status==='Prospect').length;
-  const pending=DB.walkins.filter(w=>w.status==='New'||w.status==='Contacted').length;
+  const pending=DB.walkins.filter(w=>w.status==='New').length;
   const camps=new Set(DB.walkins.map(w=>w.campaign).filter(Boolean)).size;
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  set('wk-kpi-total',total); set('wk-kpi-converted',converted);
-  set('wk-kpi-pending',pending); set('wk-kpi-camps',camps);
+  set('wk-kpi-total',total); set('wk-kpi-contacted',contacted);
+  set('wk-kpi-converted',converted); set('wk-kpi-pending',pending); set('wk-kpi-camps',camps);
 }
-function renderWalkinList(filter=''){
+function renderWalkinList(filter='', statusFilter=''){
   const fl=filter.toLowerCase();
   const rows=DB.walkins.filter(w=>{
+    if(statusFilter && w.status!==statusFilter) return false;
     if(!fl) return true;
     return (w.name||'').toLowerCase().includes(fl)||(w.company||'').toLowerCase().includes(fl)||(w.mobile||'').toLowerCase().includes(fl)||(w.custId||'').toLowerCase().includes(fl);
   });
-  const statusColors={New:'new',Contacted:'pending',Prospect:'converted'};
-  const statusOpts=['New','Contacted','Prospect'].map(s=>`<option value="${s}">${s}</option>`).join('');
-  renderTable('wk-list',rows.map(w=>`
-    <tr>
+  const empOpts=empOptions().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  renderTable('wk-list',rows.map(w=>{
+    const isProspect=w.status==='Prospect';
+    const statusBadge=isProspect?'converted':w.status==='Contacted'?'pending':'new';
+    // Status dropdown — locked if already Prospect
+    const statusControl = isProspect
+      ? `<span class="badge converted">✓ Prospect</span>`
+      : `<select class="fi" style="padding:3px 8px;font-size:11px;min-width:110px" onchange="updateWalkinStatus('${w.id}',this.value)">
+          <option value="New"${w.status==='New'?' selected':''}>New</option>
+          <option value="Contacted"${w.status==='Contacted'?' selected':''}>Contacted</option>
+          <option value="Prospect">→ Prospect</option>
+        </select>`;
+    return `<tr>
+      <td>${statusControl}</td>
       <td><span class="tid" style="font-size:11px;background:var(--pl);padding:2px 6px;border-radius:4px">${w.custId}</span></td>
       <td class="tid">${w.id}</td>
       <td class="tname">${w.name}</td>
       <td>${w.mobile}</td>
-      <td style="font-size:11px;color:var(--t3)">${w.email||'—'}</td>
       <td>${w.company||'—'}</td>
       <td>${w.city||'—'}</td>
-      <td>${w.industry||'—'}</td>
       <td>${w.productName||'—'}</td>
       <td style="font-size:11px">${w.campaignName||'—'}</td>
       <td>${w.salesName||'—'}</td>
-      <td style="font-size:11px;color:var(--t3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${w.remarks||''}">${w.remarks||'—'}</td>
-      <td>
-        <select class="fi" style="padding:4px 8px;font-size:11px;min-width:120px;border-color:${w.status==='Prospect'?'var(--teal)':w.status==='Contacted'?'var(--amber)':'var(--border2)'}"
-          onchange="updateWalkinStatus('${w.id}',this.value)">
-          ${['New','Contacted','Prospect'].map(s=>`<option value="${s}"${s===w.status?' selected':''}>${s==='Prospect'?'✓ Prospect':s}</option>`).join('')}
-        </select>
-      </td>
+      <td style="font-size:10px;color:var(--t3)">${w.updatedAt||w.createdAt||'—'}</td>
+      <td style="font-size:10px;color:var(--t3)">${w.updatedBy||w.createdBy||'—'}</td>
       <td class="tbl-actions">
         <button class="btn btn-p btn-xs" onclick="viewWalkinDetail('${w.id}')">View</button>
+        <button class="btn btn-t btn-xs" onclick="quickTaskModal('Walk-In','${w.id}','${w.name.replace(/'/g,"\\'")}')">+Task</button>
         <button class="btn btn-d btn-xs" onclick="delWalkin('${w.id}')">Del</button>
       </td>
-    </tr>`),14);
+    </tr>`;
+  }),13);
 }
-function filterWalkinTable(val){
-  renderWalkinList(val);
-}
+function filterWalkinTable(val){ document.getElementById('wk-search').value=val||''; renderWalkinList(val||''); }
+function filterWalkinByStatus(status){ renderWalkinList('',status); }
 function viewWalkinDetail(id){
   const w=DB.walkins.find(x=>x.id===id); if(!w) return;
   const prosp=DB.prospects.find(p=>p.custId===w.custId);
@@ -1842,28 +2030,21 @@ function viewWalkinDetail(id){
         <div><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase">Walk-In ID</div><div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--p)">${w.id}</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div><strong>Name:</strong> ${w.name}</div>
-        <div><strong>Mobile:</strong> ${w.mobile}</div>
-        <div><strong>Email:</strong> ${w.email||'—'}</div>
-        <div><strong>Company:</strong> ${w.company||'—'}</div>
-        <div><strong>City:</strong> ${w.city||'—'}</div>
-        <div><strong>Industry:</strong> ${w.industry||'—'}</div>
+        <div><strong>Name:</strong> ${w.name}</div><div><strong>Mobile:</strong> ${w.mobile}</div>
+        <div><strong>Company:</strong> ${w.company||'—'}</div><div><strong>City:</strong> ${w.city||'—'}</div>
         <div><strong>Product Interest:</strong> ${w.productName||'—'}</div>
         <div><strong>Campaign:</strong> ${w.campaignName||'—'}</div>
         <div><strong>Sales Person:</strong> ${w.salesName||'—'}</div>
         <div><strong>Status:</strong> <span class="badge ${w.status==='Prospect'?'converted':w.status==='Contacted'?'pending':'new'}">${w.status}</span></div>
+        <div><strong>Created:</strong> ${w.createdAt||'—'} by ${w.createdBy||'—'}</div>
+        <div><strong>Updated:</strong> ${w.updatedAt||'—'} by ${w.updatedBy||'—'}</div>
       </div>
-      ${w.remarks?`<div style="font-size:12px;padding:8px 12px;background:var(--bg);border-radius:6px;color:var(--t2)"><strong>Remarks:</strong> ${w.remarks}</div>`:''}
       ${prosp?`<div style="padding:8px 12px;background:var(--gl);border-radius:6px;border:1px solid #a7f3d0;font-size:12px;color:var(--green)">✓ Linked Prospect ID: <strong>${prosp.id}</strong></div>`:''}
     </div>`);
 }
 function delWalkin(id){
   showModal('Delete Walk-In','<p style="font-size:13px">Delete this walk-in record? This cannot be undone.</p>',
-    ()=>{
-      const i=DB.walkins.findIndex(x=>x.id===id);
-      if(i>-1){DB.walkins.splice(i,1);}
-      renderWalkinList(); renderWalkinStats(); updateChips(); toast('Walk-in deleted','info');
-    });
+    ()=>{ const i=DB.walkins.findIndex(x=>x.id===id); if(i>-1){DB.walkins.splice(i,1);} renderWalkinList(); renderWalkinStats(); updateChips(); toast('Walk-in deleted','info'); });
 }
 
 // ─── CUSTOMER LOOKUP HELPERS ───
@@ -1943,15 +2124,45 @@ function clearProspectForm(){
   document.getElementById('pro-id').value=nextId('PRO');
   document.getElementById('pro-cust-id').value=nextId('CUST');
 }
-function renderProspectList(){
-  renderTable('pro-list',DB.prospects.map(p=>`<tr>
-    <td class="tid">${p.id}</td>
-    <td>${p.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${p.custId}</span>`:'—'}</td>
-    <td class="tname">${p.company}</td><td>${p.contact}</td><td>${p.mobile||'—'}</td><td>${p.industry||'—'}</td><td>${p.salesName||'—'}</td>
-    <td class="tbl-actions">
-      <button class="btn btn-p btn-xs" onclick="convertProspectById('${p.id}')">→Lead</button>
-      <button class="btn btn-d btn-xs" onclick="delConfirm(DB.prospects,'${p.id}','pro-list',renderProspectList,'prospect')">Del</button>
-    </td></tr>`),8);
+function toggleProspectForm(){ const p=document.getElementById('pro-form-panel'); if(p) p.style.display=p.style.display==='none'?'block':'none'; }
+function renderProspectStats(){
+  const myEmp=_currentUser&&_currentUser.empId;
+  const myName=_currentUser&&_currentUser.name;
+  const total=DB.prospects.length;
+  const mine=DB.prospects.filter(p=>myName&&(p.salesName===myName||p.sales===myEmp)).length;
+  const convertedIds=new Set(DB.leads.map(l=>l.custId).filter(Boolean));
+  const converted=DB.prospects.filter(p=>convertedIds.has(p.custId)).length;
+  const myConverted=DB.prospects.filter(p=>(myName&&(p.salesName===myName||p.sales===myEmp))&&convertedIds.has(p.custId)).length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('pro-kpi-total',total); s('pro-kpi-mine',mine); s('pro-kpi-converted',converted); s('pro-kpi-myconverted',myConverted);
+}
+function filterProspectList(type){
+  const myEmp=_currentUser&&_currentUser.empId;
+  const myName=_currentUser&&_currentUser.name;
+  const convertedIds=new Set(DB.leads.map(l=>l.custId).filter(Boolean));
+  const badge=document.getElementById('pro-filter-badge');
+  let rows=DB.prospects;
+  if(type==='mine'){ rows=rows.filter(p=>myName&&(p.salesName===myName||p.sales===myEmp)); if(badge)badge.textContent='— My Prospects'; }
+  else if(type==='myconverted'){ rows=rows.filter(p=>(myName&&(p.salesName===myName||p.sales===myEmp))&&convertedIds.has(p.custId)); if(badge)badge.textContent='— My Converted'; }
+  else { if(badge)badge.textContent=''; }
+  _renderProspectRows(rows);
+}
+function renderProspectList(){ renderProspectStats(); _renderProspectRows(DB.prospects); }
+function _renderProspectRows(rows){
+  const convertedIds=new Set(DB.leads.map(l=>l.custId).filter(Boolean));
+  renderTable('pro-list',rows.map(p=>{
+    const isConverted=convertedIds.has(p.custId);
+    return `<tr>
+      <td class="tid">${p.id}</td>
+      <td>${p.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${p.custId}</span>`:'—'}</td>
+      <td class="tname">${p.company}</td><td>${p.contact}</td><td>${p.mobile||'—'}</td><td>${p.industry||'—'}</td><td>${p.source||'—'}</td><td>${p.salesName||'—'}</td>
+      <td style="font-size:10px;color:var(--t3)">${p.createdAt||'—'}</td>
+      <td class="tbl-actions">
+        ${isConverted?`<span class="badge converted" style="font-size:10px">✓ Lead</span>`:`<button class="btn btn-p btn-xs" onclick="convertProspectById('${p.id}')">→Lead</button>`}
+        <button class="btn btn-t btn-xs" onclick="quickTaskModal('Prospect','${p.id}','${(p.company||'').replace(/'/g,"\\'")}')">+Task</button>
+        <button class="btn btn-d btn-xs" onclick="delConfirm(DB.prospects,'${p.id}','pro-list',renderProspectList,'prospect')">Del</button>
+      </td></tr>`;
+  }),10);
 }
 function convertProspectToLead(){
   const company=v('pro-company'); if(!company){toast('Save prospect first','error');return;}
@@ -2015,8 +2226,35 @@ function clearLeadForm(){
   document.getElementById('lead-id').value=nextId('LD');
   hideCustHint('lead-cust-hint');
 }
-function renderLeadList(){
-  renderTable('lead-list',DB.leads.map(l=>`<tr>
+function toggleLeadForm(){ const p=document.getElementById('lead-form-panel'); if(p) p.style.display=p.style.display==='none'?'block':'none'; }
+function renderLeadStats(){
+  const myName=_currentUser&&_currentUser.name;
+  const myEmp=_currentUser&&_currentUser.empId;
+  const total=DB.leads.length;
+  const mine=DB.leads.filter(l=>myName&&(l.assignedName===myName||l.assigned===myEmp)).length;
+  const wonIds=new Set(DB.opportunities.filter(o=>o.stage==='Closed Won').map(o=>o.custId));
+  const open=DB.leads.filter(l=>!wonIds.has(l.custId)).length;
+  const inPipeline=new Set(DB.opportunities.map(o=>o.custId));
+  const pipeline=DB.leads.filter(l=>inPipeline.has(l.custId)).length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('ld-kpi-total',total); s('ld-kpi-mine',mine); s('ld-kpi-open',open); s('ld-kpi-pipeline',pipeline);
+}
+function filterLeadList(type){
+  const myName=_currentUser&&_currentUser.name;
+  const myEmp=_currentUser&&_currentUser.empId;
+  const wonIds=new Set(DB.opportunities.filter(o=>o.stage==='Closed Won').map(o=>o.custId));
+  const inPipeline=new Set(DB.opportunities.map(o=>o.custId));
+  const badge=document.getElementById('ld-filter-badge');
+  let rows=DB.leads;
+  if(type==='mine'){ rows=rows.filter(l=>myName&&(l.assignedName===myName||l.assigned===myEmp)); if(badge)badge.textContent='— My Leads'; }
+  else if(type==='open'){ rows=rows.filter(l=>!wonIds.has(l.custId)); if(badge)badge.textContent='— Open'; }
+  else if(type==='pipeline'){ rows=rows.filter(l=>inPipeline.has(l.custId)); if(badge)badge.textContent='— In Pipeline'; }
+  else { if(badge)badge.textContent=''; }
+  _renderLeadRows(rows);
+}
+function renderLeadList(){ renderLeadStats(); _renderLeadRows(DB.leads); }
+function _renderLeadRows(rows){
+  renderTable('lead-list',rows.map(l=>`<tr>
     <td class="tid">${l.id}</td>
     <td>${l.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${l.custId}</span>`:'—'}</td>
     <td class="tname">${l.company}</td>
@@ -2031,6 +2269,7 @@ function renderLeadList(){
     </td>
     <td class="tbl-actions">
       <button class="btn btn-t btn-xs" onclick="convertLeadById('${l.id}')">→Pipeline</button>
+      <button class="btn btn-p btn-xs" onclick="quickTaskModal('Lead','${l.id}','${(l.company||'').replace(/'/g,"\'")}')">+Task</button>
       <button class="btn btn-d btn-xs" onclick="delConfirm(DB.leads,'${l.id}','lead-list',renderLeadList,'lead')">Del</button>
     </td></tr>`),9);
 }
@@ -2118,26 +2357,36 @@ function clearOppForm(){
   const msg=document.getElementById('opp-validation-msg');if(msg)msg.style.display='none';
   hideCustHint('opp-cust-hint');
 }
+function togglePipelineForm(){ const p=document.getElementById('pipeline-form-panel'); if(p) p.style.display=p.style.display==='none'?'block':'none'; }
+function renderOppStats(){
+  const total=DB.opportunities.length;
+  const totalVal=DB.opportunities.reduce((s,o)=>s+(parseFloat(o.value)||0),0);
+  const won=DB.opportunities.filter(o=>o.stage==='Closed Won').length;
+  const lost=DB.opportunities.filter(o=>o.stage==='Closed Lost').length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('pl-kpi-total',total); s('pl-kpi-value',fmt(totalVal)); s('pl-kpi-won',won); s('pl-kpi-lost',lost);
+}
 function renderOppList(){
-  renderTable('opp-list',DB.opportunities.map(o=>{
-    const sc={Qualification:'progress',Demo:'new','Proposal':'sent',Negotiation:'pending','Closed Won':'won','Closed Lost':'lost'};
-    return `<tr>
-      <td class="tid">${o.id}</td>
-      <td>${o.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${o.custId}</span>`:'—'}</td>
-      <td class="tname">${o.customer}</td>
-      <td>${o.productName||'—'}</td>
-      <td>${o.value?fmt(o.value):'—'}</td>
-      <td><span class="badge ${sc[o.stage]||'draft'}">${o.stage}</span></td>
-      <td>${o.prob||'—'}%</td>
-      <td>${fmtDate(o.closeDate)}</td>
-      <td class="tbl-actions">
-        <button class="btn btn-p btn-xs" onclick="nav('quotations',null)">Quotation</button>
-        <button class="btn btn-d btn-xs" onclick="delConfirm(DB.opportunities,'${o.id}','opp-list',renderOppList,'opportunity')">Del</button>
-      </td></tr>`;
-  }),9);
+  renderOppStats();
+  const sc={Qualification:'progress',Demo:'new','Proposal':'sent',Negotiation:'pending','Closed Won':'won','Closed Lost':'lost'};
+  renderTable('opp-list',DB.opportunities.map(o=>`<tr>
+    <td class="tid">${o.id}</td>
+    <td>${o.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${o.custId}</span>`:'—'}</td>
+    <td class="tname">${o.customer}</td>
+    <td>${o.productName||'—'}</td>
+    <td>${o.value?fmt(o.value):'—'}</td>
+    <td><span class="badge ${sc[o.stage]||'draft'}">${o.stage}</span></td>
+    <td>${o.prob||'—'}%</td>
+    <td>${fmtDate(o.closeDate)}</td>
+    <td class="tbl-actions">
+      <button class="btn btn-p btn-xs" onclick="nav('quotations',null)">Quotation</button>
+      <button class="btn btn-t btn-xs" onclick="quickTaskModal('Opportunity','${o.id}','${(o.customer||'').replace(/'/g,"\'")}')">+Task</button>
+      <button class="btn btn-d btn-xs" onclick="delConfirm(DB.opportunities,'${o.id}','opp-list',renderOppList,'opportunity')">Del</button>
+    </td></tr>`),9);
 }
 
 // ─── TASKS ───
+function toggleTaskForm(){ const p=document.getElementById('task-form-panel'); if(p) p.style.display=p.style.display==='none'?'block':'none'; }
 function saveTask(){
   const title=v('task-title'); if(!title){toast('Title required','error');return;}
   const assigned=gv('task-assigned'); const assignedName=DB.employees.find(e=>e.id===assigned)?.name||'';
@@ -2146,11 +2395,76 @@ function saveTask(){
   clearForm('task'); document.getElementById('task-id').value=nextId('TSK'); toast('Task saved ✓');
   sheetsAutoPush('tasks');
 }
+function renderTaskStats(){
+  const myName=_currentUser&&_currentUser.name;
+  const myEmp=_currentUser&&_currentUser.empId;
+  const isAdmin=!_currentUser||_currentUser.userId==='sioniqadmin';
+  const myTasks=isAdmin?DB.tasks:DB.tasks.filter(t=>t.assignedName===myName||t.assigned===myEmp);
+  const total=myTasks.length;
+  const mine=myTasks.length;
+  const pending=myTasks.filter(t=>t.status!=='Completed').length;
+  const done=myTasks.filter(t=>t.status==='Completed').length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('tk-kpi-total',DB.tasks.length); s('tk-kpi-mine',mine); s('tk-kpi-pending',pending); s('tk-kpi-done',done);
+}
+function filterTaskList(type){
+  const myName=_currentUser&&_currentUser.name;
+  const myEmp=_currentUser&&_currentUser.empId;
+  const isAdmin=!_currentUser||_currentUser.userId==='sioniqadmin';
+  const badge=document.getElementById('tk-filter-badge');
+  // Non-admin users can ONLY see their own tasks
+  let base = isAdmin ? DB.tasks : DB.tasks.filter(t=>t.assignedName===myName||t.assigned===myEmp);
+  let rows=base;
+  if(type==='mine'){ rows=DB.tasks.filter(t=>t.assignedName===myName||t.assigned===myEmp); if(badge)badge.textContent='— Mine'; }
+  else if(type==='pending'){ rows=rows.filter(t=>t.status!=='Completed'); if(badge)badge.textContent='— Pending'; }
+  else if(type==='done'){ rows=rows.filter(t=>t.status==='Completed'); if(badge)badge.textContent='— Completed'; }
+  else { if(badge)badge.textContent=isAdmin?'':' — My Tasks'; }
+  _renderTaskRows(rows);
+}
 function renderTaskList(){
-  renderTable('task-list',DB.tasks.map(t=>`<tr><td class="tid">${t.id}</td><td class="tname">${t.title}</td><td>${t.assignedName||'—'}</td><td><span class="badge ${t.priority.toLowerCase()}">${t.priority}</span></td><td>${fmtDate(t.dueDate)}</td><td><span class="badge ${t.status==='Completed'?'won':'pending'}">${t.status}</span></td><td class="tbl-actions"><button class="btn btn-t btn-xs" onclick="markTaskDone('${t.id}')">✓ Done</button><button class="btn btn-d btn-xs" onclick="delConfirm(DB.tasks,'${t.id}','task-list',renderTaskList,'task')">Del</button></td></tr>`),7);
+  renderTaskStats();
+  const myName=_currentUser&&_currentUser.name;
+  const myEmp=_currentUser&&_currentUser.empId;
+  const isAdmin=!_currentUser||_currentUser.userId==='sioniqadmin';
+  const rows=isAdmin?DB.tasks:DB.tasks.filter(t=>t.assignedName===myName||t.assigned===myEmp);
+  const badge=document.getElementById('tk-filter-badge');
+  if(badge&&!isAdmin) badge.textContent='— My Tasks';
+  _renderTaskRows(rows);
+}
+function _renderTaskRows(rows){
+  renderTable('task-list',rows.map(t=>`<tr>
+    <td class="tid">${t.id}</td>
+    <td class="tname">${t.title}</td>
+    <td style="font-size:11px">${t.relType||'—'} ${t.refId?`<span class="tid" style="font-size:10px">${t.refId}</span>`:''}  </td>
+    <td>${t.assignedName||'—'}</td>
+    <td><span class="badge ${(t.priority||'').toLowerCase()}">${t.priority||'—'}</span></td>
+    <td>${fmtDate(t.dueDate)}</td>
+    <td><span class="badge ${t.status==='Completed'?'won':'pending'}">${t.status}</span></td>
+    <td class="tbl-actions">
+      <button class="btn btn-t btn-xs" onclick="markTaskDone('${t.id}')">✓ Done</button>
+      <button class="btn btn-d btn-xs" onclick="delConfirm(DB.tasks,'${t.id}','task-list',renderTaskList,'task')">Del</button>
+    </td></tr>`),8);
 }
 function markTaskDone(id){
-  const t=DB.tasks.find(x=>x.id===id); if(t){ t.status='Completed'; renderTaskList(); updateChips(); toast('Task marked complete ✓'); sheetsAutoPush('tasks'); }
+  const t=DB.tasks.find(x=>x.id===id); if(t){ t.status='Completed'; t.completedAt=_ts(); t.completedBy=_by(); renderTaskList(); updateChips(); toast('Task marked complete ✓'); sheetsAutoPush('tasks'); }
+}
+// Universal quick task modal — used by Walk-In, Prospect, Lead, Pipeline table buttons
+function quickTaskModal(relType, refId, name){
+  const empOpts=empOptions().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  showModal(`+ Task — ${name}`,`
+    <div class="fg c2" style="gap:10px">
+      <div class="fgrp full"><label class="lbl">Task Title <span class="req">*</span></label><input class="fi" id="qtm-title" placeholder="e.g. Follow up call, Demo, Send proposal"></div>
+      <div class="fgrp"><label class="lbl">Assign To <span class="req">*</span></label><select class="fi" id="qtm-emp">${empOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Priority</label><select class="fi" id="qtm-pri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+      <div class="fgrp"><label class="lbl">Due Date</label><input class="fi" type="date" id="qtm-due"></div>
+      <div class="fgrp full"><label class="lbl">Remarks</label><input class="fi" id="qtm-rem" placeholder="Notes…"></div>
+    </div>`,()=>{
+    const title=document.getElementById('qtm-title').value;
+    const emp=document.getElementById('qtm-emp').value;
+    if(!title||!emp){toast('Title and assignee required','error');return;}
+    const tObj={id:nextId('TSK'),title,relType,refId,assigned:emp,assignedName:DB.employees.find(e=>e.id===emp)?.name||'',priority:document.getElementById('qtm-pri').value,dueDate:document.getElementById('qtm-due').value,status:'Pending',remarks:document.getElementById('qtm-rem').value,createdAt:_ts(),createdBy:_by()};
+    DB.tasks.push(tObj); updateChips(); toast(`Task ${tObj.id} assigned ✓`); sheetsAutoPush('tasks');
+  });
 }
 
 // ─── CUSTOMERS ───
@@ -3249,9 +3563,120 @@ function renderDashboard(){
 function renderReports(){
   document.getElementById('rpt-leads').textContent=DB.leads.length;
   document.getElementById('rpt-won').textContent=DB.opportunities.filter(o=>o.stage==='Closed Won').length;
-  const rev=DB.invoices.reduce((a,i)=>a+i.total,0);
+  const rev=DB.invoices.reduce((a,i)=>a+(parseFloat(i.total)||0),0);
   document.getElementById('rpt-revenue').textContent=fmt(rev);
   document.getElementById('rpt-impls').textContent=DB.onboards.length;
+  renderAdvancedReports();
+}
+function renderAdvancedReports(){
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  // ── Employee Performance ──────────────────────────────────────────
+  const empMap={};
+  DB.employees.filter(e=>e.status==='Active').forEach(e=>{
+    empMap[e.id]={id:e.id,name:e.name,leads:0,converted:0,tasks:0,done:0,onTime:0};
+  });
+  DB.leads.forEach(l=>{
+    if(l.assigned && empMap[l.assigned]) empMap[l.assigned].leads++;
+  });
+  const wonCustIds=new Set(DB.opportunities.filter(o=>o.stage==='Closed Won').map(o=>o.custId));
+  DB.leads.filter(l=>wonCustIds.has(l.custId)).forEach(l=>{
+    if(l.assigned && empMap[l.assigned]) empMap[l.assigned].converted++;
+  });
+  DB.tasks.forEach(t=>{
+    if(t.assigned && empMap[t.assigned]){
+      empMap[t.assigned].tasks++;
+      if(t.status==='Completed') empMap[t.assigned].done++;
+      if(t.status==='Completed' && t.dueDate){
+        const due=new Date(t.dueDate); due.setHours(0,0,0,0);
+        const comp=t.completedAt?new Date(t.completedAt):new Date();
+        if(comp<=due) empMap[t.assigned].onTime++;
+      }
+    }
+  });
+  const empRows=Object.values(empMap).filter(e=>e.leads>0||e.tasks>0);
+  const empBod=document.getElementById('rpt-emp-body');
+  if(empBod) empBod.innerHTML=empRows.length?empRows.map(e=>{
+    const convPct=e.leads?Math.round(e.converted/e.leads*100):0;
+    const ontimePct=e.done?Math.round(e.onTime/e.done*100):0;
+    return `<tr><td class="tname">${e.name}</td><td>${e.leads}</td><td>${e.converted}</td>
+      <td><span class="badge ${convPct>=50?'won':'pending'}">${convPct}%</span></td>
+      <td>${e.tasks}</td><td>${e.done}</td>
+      <td><span class="badge ${ontimePct>=80?'won':ontimePct>=50?'pending':'lost'}">${ontimePct}%</span></td></tr>`;
+  }).join(''):'<tr><td colspan="7" class="empty">No employee data</td></tr>';
+
+  // ── Task Status User Wise ─────────────────────────────────────────
+  const taskEmpMap={};
+  DB.tasks.forEach(t=>{
+    const key=t.assignedName||t.assigned||'Unassigned';
+    if(!taskEmpMap[key]) taskEmpMap[key]={name:key,total:0,pending:0,done:0,onTime:0,overdue:0};
+    taskEmpMap[key].total++;
+    if(t.status==='Completed'){
+      taskEmpMap[key].done++;
+      if(t.dueDate){
+        const due=new Date(t.dueDate); due.setHours(0,0,0,0);
+        const comp=t.completedAt?new Date(t.completedAt):new Date();
+        if(comp<=due) taskEmpMap[key].onTime++; else taskEmpMap[key].overdue++;
+      }
+    } else {
+      taskEmpMap[key].pending++;
+      if(t.dueDate){ const due=new Date(t.dueDate); due.setHours(0,0,0,0); if(today>due) taskEmpMap[key].overdue++; }
+    }
+  });
+  const taskBod=document.getElementById('rpt-task-body');
+  if(taskBod) taskBod.innerHTML=Object.values(taskEmpMap).length?Object.values(taskEmpMap).map(e=>`<tr>
+    <td class="tname">${e.name}</td><td>${e.total}</td>
+    <td><span class="badge ${e.pending>0?'pending':'won'}">${e.pending}</span></td>
+    <td>${e.done}</td>
+    <td style="color:var(--green);font-weight:600">${e.onTime}</td>
+    <td><span class="badge ${e.overdue>0?'lost':'won'}">${e.overdue}</span></td>
+  </tr>`).join(''):'<tr><td colspan="6" class="empty">No task data</td></tr>';
+
+  // ── Campaign Performance ──────────────────────────────────────────
+  const campBod=document.getElementById('rpt-camp-body');
+  if(campBod){
+    const rows=DB.campaigns.map(c=>{
+      const wkins=DB.walkins.filter(w=>w.campaign===c.id||w.campaignName===c.name).length;
+      const prosp=DB.walkins.filter(w=>(w.campaign===c.id||w.campaignName===c.name)&&w.status==='Prospect').length;
+      const expectedLeads=parseInt(c.expLeads)||0;
+      // Leads from prospects that came from this campaign's walk-ins
+      const campCustIds=new Set(DB.walkins.filter(w=>w.campaign===c.id||w.campaignName===c.name).map(w=>w.custId));
+      const leads=DB.leads.filter(l=>campCustIds.has(l.custId)).length;
+      const won=DB.opportunities.filter(o=>campCustIds.has(o.custId)&&o.stage==='Closed Won').length;
+      const reachPct=expectedLeads>0?Math.round(leads/expectedLeads*100):wkins>0?Math.round(leads/wkins*100):0;
+      const convPct=leads>0?Math.round(won/leads*100):0;
+      return `<tr><td class="tname">${c.name}</td><td>${wkins}</td>
+        <td>${expectedLeads||'—'}</td><td>${prosp}</td><td>${leads}</td>
+        <td><span class="badge ${reachPct>=80?'won':reachPct>=40?'pending':'lost'}">${reachPct}%</span></td>
+        <td style="color:var(--green);font-weight:600">${won}</td>
+        <td><span class="badge ${convPct>=30?'won':convPct>=10?'pending':'lost'}">${convPct}%</span></td></tr>`;
+    });
+    campBod.innerHTML=rows.length?rows.join(''):'<tr><td colspan="8" class="empty">No campaign data</td></tr>';
+  }
+
+  // ── Sales Conversion by Employee ─────────────────────────────────
+  const salesMap={};
+  DB.leads.forEach(l=>{
+    const k=l.assignedName||'Unassigned';
+    if(!salesMap[k]) salesMap[k]={name:k,leads:0,pipeVal:0,wonVal:0,lost:0};
+    salesMap[k].leads++;
+  });
+  DB.opportunities.forEach(o=>{
+    const k=o.ownerName||'Unassigned';
+    if(!salesMap[k]) salesMap[k]={name:k,leads:0,pipeVal:0,wonVal:0,lost:0};
+    salesMap[k].pipeVal+=parseFloat(o.value)||0;
+    if(o.stage==='Closed Won') salesMap[k].wonVal+=parseFloat(o.value)||0;
+    if(o.stage==='Closed Lost') salesMap[k].lost++;
+  });
+  const salesBod=document.getElementById('rpt-sales-conv-body');
+  if(salesBod) salesBod.innerHTML=Object.values(salesMap).length?Object.values(salesMap).map(s=>{
+    const winRate=s.leads>0?Math.round((s.wonVal>0?1:0)/Math.max(s.leads,1)*100):0;
+    const wr2=s.pipeVal>0?Math.round(s.wonVal/s.pipeVal*100):0;
+    return `<tr><td class="tname">${s.name}</td><td>${s.leads}</td>
+      <td>${fmt(s.pipeVal)}</td><td style="color:var(--green);font-weight:600">${fmt(s.wonVal)}</td>
+      <td><span class="badge ${s.lost>0?'lost':'won'}">${s.lost}</span></td>
+      <td><span class="badge ${wr2>=50?'won':wr2>=20?'pending':'lost'}">${wr2}%</span></td></tr>`;
+  }).join(''):'<tr><td colspan="6" class="empty">No sales data</td></tr>';
 }
 
 const reportTables={
@@ -3748,12 +4173,14 @@ function _afterLogin(){
   // Refresh all lists and dropdowns now that data is in DB
   renderDashboard(); updateChips();
   renderProdList(); renderPlanList(); renderCTList();
-  renderEmpList(); renderProspectList(); renderLeadList();
-  renderOppList(); renderCustList(); renderQtList(); renderInvList();
+  renderEmpList(); renderWalkinList(); renderWalkinStats();
+  renderProspectList(); renderProspectStats();
+  renderLeadList(); renderLeadStats();
+  renderOppList(); renderOppStats();
+  renderTaskList(); renderTaskStats();
+  renderCustList(); renderQtList(); renderInvList();
   renderLeadStatusList(); buildMapProductOptions();
-  try{ renderWalkinList(); }catch(e){}
   try{ renderOnboardList(); }catch(e){}
-  try{ renderTaskList(); }catch(e){}
   try{ renderCampList(); }catch(e){}
 
   // Show sync badge
