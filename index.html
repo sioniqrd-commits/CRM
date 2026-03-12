@@ -168,6 +168,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .kpi.violet .kpi-val{color:var(--violet)}.kpi.violet .kpi-ico{background:var(--vl);color:var(--violet)}
 .kpi.rose .kpi-val{color:var(--rose)}.kpi.rose .kpi-ico{background:var(--rl);color:var(--rose)}
 .kpi.green .kpi-val{color:var(--green)}.kpi.green .kpi-ico{background:var(--gl);color:var(--green)}
+/* Report Tabs */
+.rpt-tab{background:none;border:none;border-bottom:3px solid transparent;padding:10px 16px;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;white-space:nowrap;transition:all .15s}
+.rpt-tab:hover{color:var(--p);background:var(--pl)}
+.rpt-tab.active{color:var(--p);border-bottom-color:var(--p);background:var(--pl)}
 
 /* ── CARD ── */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl2);box-shadow:var(--sh1);overflow:hidden;margin-bottom:16px}
@@ -782,8 +786,8 @@ table.tbl tbody tr:hover td{background:var(--bg)}
       </div>
     </div>
     <div class="tw"><table class="tbl"><thead><tr>
-      <th>ID</th><th>Cust ID</th><th>Company</th><th>Product</th><th>Assigned</th><th>Value</th><th>Close Date</th><th>Status</th><th>Actions</th>
-    </tr></thead><tbody id="lead-list"><tr><td colspan="9" class="empty">No leads yet</td></tr></tbody></table></div>
+      <th>ID</th><th>Cust ID</th><th>Company</th><th>Product</th><th>Assigned</th><th>Value</th><th>Close Date</th><th>Lead Status</th><th>Pipeline Stage</th><th>Actions</th>
+    </tr></thead><tbody id="lead-list"><tr><td colspan="10" class="empty">No leads yet</td></tr></tbody></table></div>
   </div>
 
   <!-- Form (hidden by default) -->
@@ -860,8 +864,8 @@ table.tbl tbody tr:hover td{background:var(--bg)}
       <div class="card-title">Opportunities</div>
     </div>
     <div class="tw"><table class="tbl"><thead><tr>
-      <th>ID</th><th>Cust ID</th><th>Customer</th><th>Product</th><th>Deal Value</th><th>Stage</th><th>Prob%</th><th>Close Date</th><th>Actions</th>
-    </tr></thead><tbody id="opp-list"><tr><td colspan="9" class="empty">No opportunities yet</td></tr></tbody></table></div>
+      <th>ID</th><th>Cust ID</th><th>Customer</th><th>Product</th><th>Deal Value</th><th>Stage</th><th>Prob%</th><th>Close Date</th><th>Owner</th><th>Actions</th>
+    </tr></thead><tbody id="opp-list"><tr><td colspan="10" class="empty">No opportunities yet</td></tr></tbody></table></div>
   </div>
 
   <!-- Form (hidden by default) -->
@@ -1229,81 +1233,131 @@ table.tbl tbody tr:hover td{background:var(--bg)}
 
 <!-- ═══════════ REPORTS ═══════════ -->
 <div class="page" id="page-reports">
-  <div class="ph"><div><h1>Reports & Analytics</h1><p>Performance insights across sales, campaigns, tasks and team</p></div>
-    <div class="ph-actions"><button class="btn btn-p btn-sm" onclick="renderAdvancedReports()">🔄 Refresh</button></div>
-  </div>
-
-  <!-- Summary KPIs -->
-  <div class="kpi-row c4" style="margin-bottom:20px">
-    <div class="kpi blue"><div class="kpi-top"><div class="kpi-lbl">Total Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-val" id="rpt-leads">0</div></div>
-    <div class="kpi teal"><div class="kpi-top"><div class="kpi-lbl">Won Deals</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="rpt-won">0</div></div>
-    <div class="kpi amber"><div class="kpi-top"><div class="kpi-lbl">Total Invoice Value</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div><div class="kpi-val" id="rpt-revenue">₹0</div></div>
-    <div class="kpi violet"><div class="kpi-top"><div class="kpi-lbl">Implementations</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8"/></svg></div></div><div class="kpi-val" id="rpt-impls">0</div></div>
-  </div>
-
-  <!-- Advanced Reports Grid -->
-  <div class="g2" style="margin-bottom:18px">
-    <!-- Employee Performance -->
-    <div class="card"><div class="card-head"><div class="card-title">👤 Employee Performance</div></div>
-      <div class="card-body" id="rpt-emp-perf" style="padding:0">
-        <table class="tbl"><thead><tr><th>Employee</th><th>Leads Assigned</th><th>Converted</th><th>Conv%</th><th>Tasks</th><th>Done</th><th>On-Time%</th></tr></thead>
-        <tbody id="rpt-emp-body"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody></table>
-      </div>
-    </div>
-    <!-- Task Performance -->
-    <div class="card"><div class="card-head"><div class="card-title">✅ Task Status — User Wise</div></div>
-      <div class="card-body" style="padding:0">
-        <table class="tbl"><thead><tr><th>Employee</th><th>Total Tasks</th><th>Pending</th><th>Completed</th><th>On Time</th><th>Overdue</th></tr></thead>
-        <tbody id="rpt-task-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table>
-      </div>
+  <div class="ph">
+    <div><h1>Reports & Analytics</h1><p>Performance insights — filter by date range, then pick a report</p></div>
+    <div class="ph-actions">
+      <button class="btn btn-p btn-sm" onclick="runActiveReport()">🔄 Refresh</button>
     </div>
   </div>
 
-  <!-- Campaign Performance -->
-  <div class="card" style="margin-bottom:18px"><div class="card-head"><div class="card-title">📢 Campaign Performance — Walk-In → Prospect → Lead → Won</div></div>
-    <div class="card-body" style="padding:0">
-      <table class="tbl"><thead><tr><th>Campaign</th><th>Walk-Ins</th><th>Expected Leads</th><th>Prospects</th><th>Leads</th><th>Reach%</th><th>Won Deals</th><th>Conv%</th></tr></thead>
-      <tbody id="rpt-camp-body"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody></table>
+  <!-- Date Filter Bar -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end">
+    <div class="fgrp" style="margin:0"><label class="lbl">From Date</label><input class="fi" type="date" id="rpt-from" style="padding:6px 10px"></div>
+    <div class="fgrp" style="margin:0"><label class="lbl">To Date</label><input class="fi" type="date" id="rpt-to" style="padding:6px 10px"></div>
+    <button class="btn btn-p btn-sm" onclick="runActiveReport()">Apply Filter</button>
+    <button class="btn btn-s btn-sm" onclick="clearRptFilter()">Clear</button>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="rpt-quick-btns">
+      <button class="btn btn-s btn-xs" onclick="setRptDays(7)">Last 7d</button>
+      <button class="btn btn-s btn-xs" onclick="setRptDays(30)">Last 30d</button>
+      <button class="btn btn-s btn-xs" onclick="setRptDays(90)">Last 90d</button>
+      <button class="btn btn-s btn-xs" onclick="setRptMonth()">This Month</button>
     </div>
   </div>
 
-  <!-- Sales Conversion by Employee -->
-  <div class="card" style="margin-bottom:18px"><div class="card-head"><div class="card-title">💰 Sales Conversion — Pipeline by Employee</div></div>
-    <div class="card-body" style="padding:0">
-      <table class="tbl"><thead><tr><th>Sales Person</th><th>Leads</th><th>Pipeline Value</th><th>Won Value</th><th>Lost</th><th>Win Rate</th></tr></thead>
-      <tbody id="rpt-sales-conv-body"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table>
+  <!-- KPI Summary Strip -->
+  <div class="kpi-row c5" style="margin-bottom:18px">
+    <div class="kpi blue"><div class="kpi-top"><div class="kpi-lbl">Walk-Ins</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div><div class="kpi-val" id="rpt-walkins">0</div></div>
+    <div class="kpi teal"><div class="kpi-top"><div class="kpi-lbl">Leads</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div><div class="kpi-val" id="rpt-leads">0</div></div>
+    <div class="kpi green"><div class="kpi-top"><div class="kpi-lbl">Won Deals</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="kpi-val" id="rpt-won">0</div></div>
+    <div class="kpi amber"><div class="kpi-top"><div class="kpi-lbl">Invoice Value</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div><div class="kpi-val" id="rpt-revenue">₹0</div></div>
+    <div class="kpi violet"><div class="kpi-top"><div class="kpi-lbl">Tasks Done</div><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div></div><div class="kpi-val" id="rpt-impls">0</div></div>
+  </div>
+
+  <!-- Sub-Report Navigation Tabs -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:18px;overflow-x:auto" id="rpt-tabs">
+    <button class="rpt-tab active" onclick="switchRptTab('emp',this)">👤 Employee</button>
+    <button class="rpt-tab" onclick="switchRptTab('tasks',this)">✅ Tasks</button>
+    <button class="rpt-tab" onclick="switchRptTab('campaign',this)">📢 Campaign</button>
+    <button class="rpt-tab" onclick="switchRptTab('sales',this)">💰 Sales</button>
+    <button class="rpt-tab" onclick="switchRptTab('leads',this)">📋 Leads</button>
+    <button class="rpt-tab" onclick="switchRptTab('pipeline',this)">🔵 Pipeline</button>
+    <button class="rpt-tab" onclick="switchRptTab('quotations',this)">📄 Quotations</button>
+    <button class="rpt-tab" onclick="switchRptTab('invoices',this)">🧾 Invoices</button>
+    <button class="rpt-tab" onclick="switchRptTab('onboard',this)">🚀 On-Board</button>
+    <button class="rpt-tab" onclick="switchRptTab('tasks-detail',this)">📝 Tasks Detail</button>
+  </div>
+
+  <!-- Report Panels -->
+  <div id="rpt-panel-emp" class="rpt-panel">
+    <div class="card"><div class="card-head"><div class="card-title">👤 Employee Performance</div><span id="rpt-emp-range" style="font-size:11px;color:var(--t3)"></span></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Employee</th><th>Dept</th><th>Walk-Ins</th><th>Leads</th><th>Won</th><th>Conv%</th><th>Pipeline ₹</th><th>Tasks</th><th>Done</th><th>On-Time%</th>
+      </tr></thead><tbody id="rpt-emp-body"><tr><td colspan="10" class="empty">Click Refresh to load</td></tr></tbody></table></div>
     </div>
   </div>
 
-  <!-- Standard Reports -->
-  <div class="g2">
-    <div class="card"><div class="card-head"><div class="card-title">Sales Reports</div></div><div class="card-body">
-      <div class="report-row" onclick="showReportModal('leads')"><div><div class="rr-title">Lead Pipeline Report</div><div class="rr-sub">All leads with stage and value</div></div><button class="btn btn-p btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('pipeline')"><div><div class="rr-title">Opportunity Report</div><div class="rr-sub">Pipeline stages and deal values</div></div><button class="btn btn-p btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('quotations')"><div><div class="rr-title">Quotations Report</div><div class="rr-sub">All generated quotations</div></div><button class="btn btn-p btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('invoices')"><div><div class="rr-title">Invoice & Revenue Report</div><div class="rr-sub">Total invoice values and payment status</div></div><button class="btn btn-p btn-xs">View</button></div>
-    </div></div>
-    <div class="card"><div class="card-head"><div class="card-title">Implementation Reports</div></div><div class="card-body">
-      <div class="report-row" onclick="showReportModal('onboard')"><div><div class="rr-title">Client On-Board Report</div><div class="rr-sub">All clients with status</div></div><button class="btn btn-t btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('training')"><div><div class="rr-title">Training Report</div><div class="rr-sub">Sessions completed and pending</div></div><button class="btn btn-t btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('tasks')"><div><div class="rr-title">Task Completion Report</div><div class="rr-sub">Open vs closed tasks by team</div></div><button class="btn btn-t btn-xs">View</button></div>
-      <div class="report-row" onclick="showReportModal('handover')"><div><div class="rr-title">Handover Report</div><div class="rr-sub">Clients moved to support</div></div><button class="btn btn-t btn-xs">View</button></div>
-    </div></div>
+  <div id="rpt-panel-tasks" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">✅ Task Performance — User Wise</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Employee</th><th>Total</th><th>Pending</th><th>Completed</th><th>On Time</th><th>Overdue</th><th>On-Time%</th>
+      </tr></thead><tbody id="rpt-task-body"><tr><td colspan="7" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
   </div>
 
-  <!-- Lead Lifecycle -->
-  <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Lead Lifecycle Flow</div></div><div class="card-body"><div class="wf">
-    <div class="wf-step"><div class="wf-node" style="background:var(--pl);color:var(--p)">Campaign</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--vl);color:var(--violet)">Walk-In</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--tl);color:var(--teal)">Prospect</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--al);color:var(--amber)">Lead</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--pl);color:var(--p)">Pipeline</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--vl);color:var(--violet)">Quotation</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--tl);color:var(--teal)">Invoice</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--gl);color:var(--green)">Customer</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--al);color:var(--amber)">On-Board</div><span class="wf-arr">→</span></div>
-    <div class="wf-step"><div class="wf-node" style="background:var(--gl);color:var(--green)">Handover</div></div>
-  </div></div></div>
+  <div id="rpt-panel-campaign" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">📢 Campaign Performance</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Campaign</th><th>Walk-Ins</th><th>Target Leads</th><th>→Prospects</th><th>→Leads</th><th>Reach%</th><th>Won</th><th>Conv%</th><th>Budget</th>
+      </tr></thead><tbody id="rpt-camp-body"><tr><td colspan="9" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-sales" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">💰 Sales Conversion by Person</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Sales Person</th><th>Leads</th><th>Pipeline Opps</th><th>Pipeline Value</th><th>Won Value</th><th>Lost</th><th>Win Rate</th>
+      </tr></thead><tbody id="rpt-sales-conv-body"><tr><td colspan="7" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-leads" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">📋 Lead Pipeline Report</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>ID</th><th>Company</th><th>Product</th><th>Assigned</th><th>Value</th><th>Status</th><th>Pipeline Stage</th><th>Created At</th>
+      </tr></thead><tbody id="rpt-leads-body"><tr><td colspan="8" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-pipeline" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">🔵 Opportunities / Pipeline</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>ID</th><th>Customer</th><th>Product</th><th>Value</th><th>Stage</th><th>Prob%</th><th>Owner</th><th>Close Date</th>
+      </tr></thead><tbody id="rpt-pipeline-body"><tr><td colspan="8" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-quotations" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">📄 Quotations</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Quot No</th><th>Customer</th><th>Product</th><th>Plan</th><th>Total</th><th>Date</th>
+      </tr></thead><tbody id="rpt-quot-body"><tr><td colspan="6" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-invoices" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">🧾 Invoices & Revenue</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>Inv No</th><th>Customer</th><th>Product</th><th>Total</th><th>Pay Status</th><th>Date</th>
+      </tr></thead><tbody id="rpt-inv-body"><tr><td colspan="6" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-onboard" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">🚀 Client On-Board Report</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>ID</th><th>Customer</th><th>Product</th><th>Plan</th><th>Manager</th><th>Go-Live</th><th>Status</th>
+      </tr></thead><tbody id="rpt-onboard-body"><tr><td colspan="7" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div id="rpt-panel-tasks-detail" class="rpt-panel" style="display:none">
+    <div class="card"><div class="card-head"><div class="card-title">📝 Tasks Detail</div></div>
+      <div style="padding:0"><table class="tbl"><thead><tr>
+        <th>ID</th><th>Title</th><th>Assigned</th><th>Related To</th><th>Priority</th><th>Due</th><th>Status</th><th>Created</th>
+      </tr></thead><tbody id="rpt-tasksdt-body"><tr><td colspan="8" class="empty">Click Refresh to load</td></tr></tbody></table></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══════════ SHEETS SYNC ═══════════ -->
@@ -2254,30 +2308,86 @@ function filterLeadList(type){
 }
 function renderLeadList(){ renderLeadStats(); _renderLeadRows(DB.leads); }
 function _renderLeadRows(rows){
-  renderTable('lead-list',rows.map(l=>`<tr>
-    <td class="tid">${l.id}</td>
-    <td>${l.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${l.custId}</span>`:'—'}</td>
-    <td class="tname">${l.company}</td>
-    <td>${l.productName||'—'}</td>
-    <td>${l.assignedName||'—'}</td>
-    <td>${l.value?fmt(l.value):'—'}</td>
-    <td>${fmtDate(l.closeDate)}</td>
-    <td>
-      <select class="fi" style="padding:3px 7px;font-size:11px;min-width:130px" onchange="updateLeadStatus('${l.id}',this.value)">
-        ${DB.leadStatuses.map(ls=>`<option value="${ls.id}"${ls.id===l.status?' selected':''}>${ls.name}</option>`).join('')}
-      </select>
-    </td>
-    <td class="tbl-actions">
-      <button class="btn btn-t btn-xs" onclick="convertLeadById('${l.id}')">→Pipeline</button>
-      <button class="btn btn-p btn-xs" onclick="quickTaskModal('Lead','${l.id}','${(l.company||'').replace(/'/g,"\'")}')">+Task</button>
-      <button class="btn btn-d btn-xs" onclick="delConfirm(DB.leads,'${l.id}','lead-list',renderLeadList,'lead')">Del</button>
-    </td></tr>`),9);
+  const sc={Qualification:'progress',Demo:'new','Proposal':'sent',Negotiation:'pending','Closed Won':'won','Closed Lost':'lost'};
+  renderTable('lead-list',rows.map(l=>{
+    // Find linked pipeline opportunity
+    const opp=DB.opportunities.find(o=>o.custId===l.custId||o.lead===l.id);
+    const pipeStage=opp?`<span class="badge ${sc[opp.stage]||'draft'}" style="font-size:10px">${opp.stage}</span><div style="font-size:9px;color:var(--t3);margin-top:2px">${opp.prob?opp.prob+'%':''}</div>`:'<span style="color:var(--t3);font-size:11px">—</span>';
+    return `<tr>
+      <td><button class="btn btn-p btn-xs" style="font-family:'JetBrains Mono',monospace;font-size:10px" onclick="editLeadModal('${l.id}')">${l.id}</button></td>
+      <td>${l.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${l.custId}</span>`:'—'}</td>
+      <td class="tname">${l.company}</td>
+      <td style="font-size:11px">${l.productName||'—'}</td>
+      <td>${l.assignedName||'—'}</td>
+      <td>${l.value?fmt(l.value):'—'}</td>
+      <td>${fmtDate(l.closeDate)}</td>
+      <td>
+        <select class="fi" style="padding:3px 7px;font-size:11px;min-width:110px" onchange="updateLeadStatus('${l.id}',this.value)">
+          ${DB.leadStatuses.map(ls=>`<option value="${ls.id}"${ls.id===l.status?' selected':''}>${ls.name}</option>`).join('')}
+        </select>
+      </td>
+      <td>${pipeStage}</td>
+      <td class="tbl-actions">
+        <button class="btn btn-t btn-xs" onclick="convertLeadById('${l.id}')">→Pipeline</button>
+        <button class="btn btn-p btn-xs" onclick="quickTaskModal('Lead','${l.id}','${(l.company||'').replace(/'/g,"\'")}')">+Task</button>
+        <button class="btn btn-d btn-xs" onclick="delConfirm(DB.leads,'${l.id}','lead-list',renderLeadList,'lead')">Del</button>
+      </td></tr>`;
+  }),10);
 }
 function updateLeadStatus(id,statusId){
   const l=DB.leads.find(x=>x.id===id); if(!l) return;
   const ls=DB.leadStatuses.find(x=>x.id===statusId);
   l.status=statusId; l.statusName=ls?.name||statusId; l.statusColor=ls?.color||'#4361ee';
+  l.updatedAt=_ts(); l.updatedBy=_by();
   renderLeadList(); toast(`Lead status → "${l.statusName}"`,'info');
+  sheetsAutoPush('leads');
+}
+
+function editLeadModal(id){
+  const l=DB.leads.find(x=>x.id===id); if(!l) return;
+  const empOpts=empOptions().map(e=>`<option value="${e.id}"${e.id===l.assigned?' selected':''}>${e.name}</option>`).join('');
+  const prodOpts=DB.products.map(p=>`<option value="${p.id}"${p.id===l.product?' selected':''}>${p.name}</option>`).join('');
+  const srcOpts=['Exhibition','Digital Marketing','Referral','Cold Calling','Website'].map(s=>`<option${s===l.source?' selected':''}>${s}</option>`).join('');
+  const stOpts=DB.leadStatuses.map(ls=>`<option value="${ls.id}"${ls.id===l.status?' selected':''}>${ls.name}</option>`).join('');
+  showModal(`✏ Edit Lead — ${l.id}`,`
+    <div class="fg c2" style="gap:10px">
+      <div class="fgrp"><label class="lbl">Lead ID</label><input class="fi mono" value="${l.id}" readonly style="background:var(--bg2)"></div>
+      <div class="fgrp"><label class="lbl">Customer ID</label><input class="fi mono" value="${l.custId||'—'}" readonly style="background:var(--bg2)"></div>
+      <div class="fgrp"><label class="lbl">Company Name <span class="req">*</span></label><input class="fi" id="el-company" value="${l.company||''}"></div>
+      <div class="fgrp"><label class="lbl">Contact Person</label><input class="fi" id="el-contact" value="${l.contact||''}"></div>
+      <div class="fgrp"><label class="lbl">Mobile</label><input class="fi" id="el-mobile" value="${l.mobile||''}"></div>
+      <div class="fgrp"><label class="lbl">Product Interest</label><select class="fi" id="el-product">${prodOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Lead Source</label><select class="fi" id="el-source">${srcOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Assigned To</label><select class="fi" id="el-assigned">${empOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Expected Value (₹)</label><input class="fi" type="number" id="el-value" value="${l.value||''}"></div>
+      <div class="fgrp"><label class="lbl">Expected Close Date</label><input class="fi" type="date" id="el-close" value="${l.closeDate||''}"></div>
+      <div class="fgrp"><label class="lbl">Lead Status</label><select class="fi" id="el-status">${stOpts}</select></div>
+      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="el-remarks" rows="2">${l.remarks||''}</textarea></div>
+      <div class="fgrp full" style="background:var(--bg2);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--t3)">
+        Created: ${l.createdAt||'—'} by ${l.createdBy||'—'}
+        ${l.updatedAt?` &nbsp;|&nbsp; Updated: ${l.updatedAt} by ${l.updatedBy||'—'}`:''}
+      </div>
+    </div>`,()=>{
+    const company=document.getElementById('el-company').value.trim();
+    if(!company){toast('Company required','error');return;}
+    const assigned=document.getElementById('el-assigned').value;
+    const product=document.getElementById('el-product').value;
+    const statusId=document.getElementById('el-status').value;
+    const ls=DB.leadStatuses.find(x=>x.id===statusId);
+    l.company=company;
+    l.contact=document.getElementById('el-contact').value;
+    l.mobile=document.getElementById('el-mobile').value;
+    l.product=product; l.productName=DB.products.find(p=>p.id===product)?.name||product;
+    l.source=document.getElementById('el-source').value;
+    l.assigned=assigned; l.assignedName=DB.employees.find(e=>e.id===assigned)?.name||'';
+    l.value=document.getElementById('el-value').value;
+    l.closeDate=document.getElementById('el-close').value;
+    l.status=statusId; l.statusName=ls?.name||statusId; l.statusColor=ls?.color||'#4361ee';
+    l.remarks=document.getElementById('el-remarks').value;
+    l.updatedAt=_ts(); l.updatedBy=_by();
+    renderLeadList(); updateChips(); toast(`Lead ${l.id} updated ✓`,'success');
+    sheetsAutoPush('leads');
+  },'Save Changes');
 }
 function convertLeadToPipeline(){
   const company=v('lead-company'); if(!company){toast('Save lead first','error');return;}
@@ -2370,19 +2480,69 @@ function renderOppList(){
   renderOppStats();
   const sc={Qualification:'progress',Demo:'new','Proposal':'sent',Negotiation:'pending','Closed Won':'won','Closed Lost':'lost'};
   renderTable('opp-list',DB.opportunities.map(o=>`<tr>
-    <td class="tid">${o.id}</td>
+    <td><button class="btn btn-p btn-xs" style="font-family:'JetBrains Mono',monospace;font-size:10px" onclick="editOppModal('${o.id}')">${o.id}</button></td>
     <td>${o.custId?`<span class="tid" style="font-size:10px;background:var(--pl);padding:1px 5px;border-radius:3px">${o.custId}</span>`:'—'}</td>
     <td class="tname">${o.customer}</td>
-    <td>${o.productName||'—'}</td>
+    <td style="font-size:11px">${o.productName||'—'}</td>
     <td>${o.value?fmt(o.value):'—'}</td>
     <td><span class="badge ${sc[o.stage]||'draft'}">${o.stage}</span></td>
     <td>${o.prob||'—'}%</td>
     <td>${fmtDate(o.closeDate)}</td>
+    <td>${o.ownerName||'—'}</td>
     <td class="tbl-actions">
       <button class="btn btn-p btn-xs" onclick="nav('quotations',null)">Quotation</button>
       <button class="btn btn-t btn-xs" onclick="quickTaskModal('Opportunity','${o.id}','${(o.customer||'').replace(/'/g,"\'")}')">+Task</button>
       <button class="btn btn-d btn-xs" onclick="delConfirm(DB.opportunities,'${o.id}','opp-list',renderOppList,'opportunity')">Del</button>
-    </td></tr>`),9);
+    </td></tr>`),10);
+}
+
+function editOppModal(id){
+  const o=DB.opportunities.find(x=>x.id===id); if(!o) return;
+  const prodOpts=DB.products.map(p=>`<option value="${p.id}"${p.id===o.product?' selected':''}>${p.name}</option>`).join('');
+  const ownerOpts=empOptions().map(e=>`<option value="${e.id}"${e.id===o.owner?' selected':''}>${e.name}</option>`).join('');
+  const stages=['Qualification','Demo','Proposal','Negotiation','Closed Won','Closed Lost'];
+  const stageOpts=stages.map(s=>`<option${s===o.stage?' selected':''}>${s}</option>`).join('');
+  showModal(`✏ Edit Opportunity — ${o.id}`,`
+    <div class="fg c2" style="gap:10px">
+      <div class="fgrp"><label class="lbl">Opportunity ID</label><input class="fi mono" value="${o.id}" readonly style="background:var(--bg2)"></div>
+      <div class="fgrp"><label class="lbl">Customer ID</label><input class="fi mono" value="${o.custId||'—'}" readonly style="background:var(--bg2)"></div>
+      <div class="fgrp"><label class="lbl">Customer Name <span class="req">*</span></label><input class="fi" id="eo-customer" value="${o.customer||''}"></div>
+      <div class="fgrp"><label class="lbl">Company</label><input class="fi" id="eo-company" value="${o.company||''}"></div>
+      <div class="fgrp"><label class="lbl">Product</label><select class="fi" id="eo-product">${prodOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Deal Value (₹)</label><input class="fi" type="number" id="eo-value" value="${o.value||''}"></div>
+      <div class="fgrp"><label class="lbl">Stage <span class="req">*</span></label><select class="fi" id="eo-stage">${stageOpts}</select></div>
+      <div class="fgrp"><label class="lbl">Probability (%)</label><input class="fi" type="number" id="eo-prob" value="${o.prob||''}" min="0" max="100"></div>
+      <div class="fgrp"><label class="lbl">Expected Close Date</label><input class="fi" type="date" id="eo-close" value="${o.closeDate||''}"></div>
+      <div class="fgrp"><label class="lbl">Owner</label><select class="fi" id="eo-owner">${ownerOpts}</select></div>
+      <div class="fgrp full"><label class="lbl">Remarks</label><textarea class="fi" id="eo-remarks" rows="2">${o.remarks||''}</textarea></div>
+      <div class="fgrp full" style="background:var(--bg2);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--t3)">
+        Created: ${o.createdAt||'—'} by ${o.createdBy||'—'}
+        ${o.updatedAt?` &nbsp;|&nbsp; Updated: ${o.updatedAt} by ${o.updatedBy||'—'}`:''}
+      </div>
+    </div>`,()=>{
+    const customer=document.getElementById('eo-customer').value.trim();
+    if(!customer){toast('Customer required','error');return;}
+    const product=document.getElementById('eo-product').value;
+    o.customer=customer;
+    o.company=document.getElementById('eo-company').value;
+    o.product=product; o.productName=DB.products.find(p=>p.id===product)?.name||product;
+    o.value=document.getElementById('eo-value').value;
+    o.stage=document.getElementById('eo-stage').value;
+    o.prob=document.getElementById('eo-prob').value;
+    o.closeDate=document.getElementById('eo-close').value;
+    const owner=document.getElementById('eo-owner').value;
+    o.owner=owner; o.ownerName=DB.employees.find(e=>e.id===owner)?.name||'';
+    o.remarks=document.getElementById('eo-remarks').value;
+    o.updatedAt=_ts(); o.updatedBy=_by();
+    // Reflect stage change back in lead list
+    const lead=DB.leads.find(l=>l.custId===o.custId||l.id===o.lead);
+    if(lead&&o.stage==='Pipeline'){
+      const pls=DB.leadStatuses.find(x=>x.name==='Pipeline');
+      if(pls){lead.status=pls.id;lead.statusName='Pipeline';lead.updatedAt=_ts();}
+    }
+    renderOppList(); renderLeadList(); updateChips(); toast(`Opportunity ${o.id} updated ✓`,'success');
+    sheetsAutoPush('opportunities'); sheetsAutoPush('leads');
+  },'Save Changes');
 }
 
 // ─── TASKS ───
@@ -3560,142 +3720,264 @@ function renderDashboard(){
 // ═══════════════════════════════════════════════════
 // REPORTS
 // ═══════════════════════════════════════════════════
-function renderReports(){
-  document.getElementById('rpt-leads').textContent=DB.leads.length;
-  document.getElementById('rpt-won').textContent=DB.opportunities.filter(o=>o.stage==='Closed Won').length;
-  const rev=DB.invoices.reduce((a,i)=>a+(parseFloat(i.total)||0),0);
-  document.getElementById('rpt-revenue').textContent=fmt(rev);
-  document.getElementById('rpt-impls').textContent=DB.onboards.length;
-  renderAdvancedReports();
+// ══════════════════════════════════════════════════════
+// REPORTS — tabbed system with date filtering
+// ══════════════════════════════════════════════════════
+let _activeRptTab = 'emp';
+
+function getRptRange(){
+  const from=document.getElementById('rpt-from')?.value||'';
+  const to=document.getElementById('rpt-to')?.value||'';
+  return {from,to};
 }
-function renderAdvancedReports(){
+function inRptRange(dateStr){
+  const {from,to}=getRptRange();
+  if(!from&&!to) return true;
+  if(!dateStr) return true;
+  const d=dateStr.substring(0,10);
+  if(from&&d<from) return false;
+  if(to&&d>to) return false;
+  return true;
+}
+function setRptDays(n){
+  const t=new Date(), f=new Date();
+  f.setDate(t.getDate()-n);
+  document.getElementById('rpt-from').value=f.toISOString().substring(0,10);
+  document.getElementById('rpt-to').value=t.toISOString().substring(0,10);
+  runActiveReport();
+}
+function setRptMonth(){
+  const t=new Date();
+  const f=new Date(t.getFullYear(),t.getMonth(),1);
+  document.getElementById('rpt-from').value=f.toISOString().substring(0,10);
+  document.getElementById('rpt-to').value=t.toISOString().substring(0,10);
+  runActiveReport();
+}
+function clearRptFilter(){
+  document.getElementById('rpt-from').value='';
+  document.getElementById('rpt-to').value='';
+  runActiveReport();
+}
+function switchRptTab(tab,el){
+  _activeRptTab=tab;
+  document.querySelectorAll('.rpt-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.rpt-panel').forEach(p=>p.style.display='none');
+  const panel=document.getElementById('rpt-panel-'+tab);
+  if(panel) panel.style.display='';
+  runActiveReport();
+}
+function runActiveReport(){ renderReports(); }
+
+function renderReports(){
+  const {from,to}=getRptRange();
+  const rangeLabel=(from||to)?` (${from||'…'} → ${to||'…'})`:'';
+
+  // ── KPI Strip (always filtered) ──────────────────────────────────
+  const wkins=DB.walkins.filter(w=>inRptRange(w.createdAt)).length;
+  const leads=DB.leads.filter(l=>inRptRange(l.createdAt)).length;
+  const won=DB.opportunities.filter(o=>o.stage==='Closed Won'&&inRptRange(o.createdAt)).length;
+  const rev=DB.invoices.filter(i=>inRptRange(i.date||i.createdAt)).reduce((a,i)=>a+(parseFloat(i.total)||0),0);
+  const tasksDone=DB.tasks.filter(t=>t.status==='Completed'&&inRptRange(t.completedAt||t.createdAt)).length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('rpt-walkins',wkins); s('rpt-leads',leads); s('rpt-won',won);
+  s('rpt-revenue',fmt(rev)); s('rpt-impls',tasksDone);
+
+  const tab=_activeRptTab;
   const today=new Date(); today.setHours(0,0,0,0);
+  const sc={Qualification:'progress',Demo:'new','Proposal':'sent',Negotiation:'pending','Closed Won':'won','Closed Lost':'lost'};
 
-  // ── Employee Performance ──────────────────────────────────────────
-  const empMap={};
-  DB.employees.filter(e=>e.status==='Active').forEach(e=>{
-    empMap[e.id]={id:e.id,name:e.name,leads:0,converted:0,tasks:0,done:0,onTime:0};
-  });
-  DB.leads.forEach(l=>{
-    if(l.assigned && empMap[l.assigned]) empMap[l.assigned].leads++;
-  });
-  const wonCustIds=new Set(DB.opportunities.filter(o=>o.stage==='Closed Won').map(o=>o.custId));
-  DB.leads.filter(l=>wonCustIds.has(l.custId)).forEach(l=>{
-    if(l.assigned && empMap[l.assigned]) empMap[l.assigned].converted++;
-  });
-  DB.tasks.forEach(t=>{
-    if(t.assigned && empMap[t.assigned]){
-      empMap[t.assigned].tasks++;
-      if(t.status==='Completed') empMap[t.assigned].done++;
-      if(t.status==='Completed' && t.dueDate){
-        const due=new Date(t.dueDate); due.setHours(0,0,0,0);
-        const comp=t.completedAt?new Date(t.completedAt):new Date();
-        if(comp<=due) empMap[t.assigned].onTime++;
-      }
-    }
-  });
-  const empRows=Object.values(empMap).filter(e=>e.leads>0||e.tasks>0);
-  const empBod=document.getElementById('rpt-emp-body');
-  if(empBod) empBod.innerHTML=empRows.length?empRows.map(e=>{
-    const convPct=e.leads?Math.round(e.converted/e.leads*100):0;
-    const ontimePct=e.done?Math.round(e.onTime/e.done*100):0;
-    return `<tr><td class="tname">${e.name}</td><td>${e.leads}</td><td>${e.converted}</td>
-      <td><span class="badge ${convPct>=50?'won':'pending'}">${convPct}%</span></td>
-      <td>${e.tasks}</td><td>${e.done}</td>
-      <td><span class="badge ${ontimePct>=80?'won':ontimePct>=50?'pending':'lost'}">${ontimePct}%</span></td></tr>`;
-  }).join(''):'<tr><td colspan="7" class="empty">No employee data</td></tr>';
-
-  // ── Task Status User Wise ─────────────────────────────────────────
-  const taskEmpMap={};
-  DB.tasks.forEach(t=>{
-    const key=t.assignedName||t.assigned||'Unassigned';
-    if(!taskEmpMap[key]) taskEmpMap[key]={name:key,total:0,pending:0,done:0,onTime:0,overdue:0};
-    taskEmpMap[key].total++;
-    if(t.status==='Completed'){
-      taskEmpMap[key].done++;
-      if(t.dueDate){
-        const due=new Date(t.dueDate); due.setHours(0,0,0,0);
-        const comp=t.completedAt?new Date(t.completedAt):new Date();
-        if(comp<=due) taskEmpMap[key].onTime++; else taskEmpMap[key].overdue++;
-      }
-    } else {
-      taskEmpMap[key].pending++;
-      if(t.dueDate){ const due=new Date(t.dueDate); due.setHours(0,0,0,0); if(today>due) taskEmpMap[key].overdue++; }
-    }
-  });
-  const taskBod=document.getElementById('rpt-task-body');
-  if(taskBod) taskBod.innerHTML=Object.values(taskEmpMap).length?Object.values(taskEmpMap).map(e=>`<tr>
-    <td class="tname">${e.name}</td><td>${e.total}</td>
-    <td><span class="badge ${e.pending>0?'pending':'won'}">${e.pending}</span></td>
-    <td>${e.done}</td>
-    <td style="color:var(--green);font-weight:600">${e.onTime}</td>
-    <td><span class="badge ${e.overdue>0?'lost':'won'}">${e.overdue}</span></td>
-  </tr>`).join(''):'<tr><td colspan="6" class="empty">No task data</td></tr>';
-
-  // ── Campaign Performance ──────────────────────────────────────────
-  const campBod=document.getElementById('rpt-camp-body');
-  if(campBod){
-    const rows=DB.campaigns.map(c=>{
-      const wkins=DB.walkins.filter(w=>w.campaign===c.id||w.campaignName===c.name).length;
-      const prosp=DB.walkins.filter(w=>(w.campaign===c.id||w.campaignName===c.name)&&w.status==='Prospect').length;
-      const expectedLeads=parseInt(c.expLeads)||0;
-      // Leads from prospects that came from this campaign's walk-ins
-      const campCustIds=new Set(DB.walkins.filter(w=>w.campaign===c.id||w.campaignName===c.name).map(w=>w.custId));
-      const leads=DB.leads.filter(l=>campCustIds.has(l.custId)).length;
-      const won=DB.opportunities.filter(o=>campCustIds.has(o.custId)&&o.stage==='Closed Won').length;
-      const reachPct=expectedLeads>0?Math.round(leads/expectedLeads*100):wkins>0?Math.round(leads/wkins*100):0;
-      const convPct=leads>0?Math.round(won/leads*100):0;
-      return `<tr><td class="tname">${c.name}</td><td>${wkins}</td>
-        <td>${expectedLeads||'—'}</td><td>${prosp}</td><td>${leads}</td>
-        <td><span class="badge ${reachPct>=80?'won':reachPct>=40?'pending':'lost'}">${reachPct}%</span></td>
-        <td style="color:var(--green);font-weight:600">${won}</td>
-        <td><span class="badge ${convPct>=30?'won':convPct>=10?'pending':'lost'}">${convPct}%</span></td></tr>`;
+  if(tab==='emp'){
+    // Employee performance
+    const empMap={};
+    DB.employees.filter(e=>e.status==='Active').forEach(e=>{
+      empMap[e.id]={id:e.id,name:e.name,dept:e.dept||'—',walkins:0,leads:0,won:0,pipeVal:0,tasks:0,done:0,onTime:0};
     });
-    campBod.innerHTML=rows.length?rows.join(''):'<tr><td colspan="8" class="empty">No campaign data</td></tr>';
+    DB.walkins.filter(w=>inRptRange(w.createdAt)).forEach(w=>{
+      if(w.sales&&empMap[w.sales]) empMap[w.sales].walkins++;
+    });
+    DB.leads.filter(l=>inRptRange(l.createdAt)).forEach(l=>{
+      if(l.assigned&&empMap[l.assigned]) empMap[l.assigned].leads++;
+    });
+    const wonCustIds=new Set(DB.opportunities.filter(o=>o.stage==='Closed Won').map(o=>o.custId));
+    DB.leads.filter(l=>wonCustIds.has(l.custId)&&inRptRange(l.createdAt)).forEach(l=>{
+      if(l.assigned&&empMap[l.assigned]) empMap[l.assigned].won++;
+    });
+    DB.opportunities.filter(o=>inRptRange(o.createdAt)).forEach(o=>{
+      if(o.owner&&empMap[o.owner]) empMap[o.owner].pipeVal+=parseFloat(o.value)||0;
+    });
+    DB.tasks.filter(t=>inRptRange(t.createdAt)).forEach(t=>{
+      if(t.assigned&&empMap[t.assigned]){
+        empMap[t.assigned].tasks++;
+        if(t.status==='Completed'){
+          empMap[t.assigned].done++;
+          if(t.dueDate){const due=new Date(t.dueDate);due.setHours(0,0,0,0);const comp=t.completedAt?new Date(t.completedAt):new Date();if(comp<=due)empMap[t.assigned].onTime++;}
+        }
+      }
+    });
+    const rows=Object.values(empMap).filter(e=>e.leads>0||e.tasks>0||e.walkins>0);
+    const bod=document.getElementById('rpt-emp-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(e=>{
+      const cp=e.leads?Math.round(e.won/e.leads*100):0;
+      const op=e.done?Math.round(e.onTime/e.done*100):0;
+      return `<tr><td class="tname">${e.name}</td><td style="font-size:11px;color:var(--t3)">${e.dept}</td>
+        <td>${e.walkins}</td><td>${e.leads}</td><td style="color:var(--green);font-weight:600">${e.won}</td>
+        <td><span class="badge ${cp>=50?'won':cp>=20?'pending':'lost'}">${cp}%</span></td>
+        <td>${fmt(e.pipeVal)}</td><td>${e.tasks}</td><td>${e.done}</td>
+        <td><span class="badge ${op>=80?'won':op>=50?'pending':'lost'}">${op}%</span></td></tr>`;
+    }).join(''):'<tr><td colspan="10" class="empty">No data for this period</td></tr>';
   }
 
-  // ── Sales Conversion by Employee ─────────────────────────────────
-  const salesMap={};
-  DB.leads.forEach(l=>{
-    const k=l.assignedName||'Unassigned';
-    if(!salesMap[k]) salesMap[k]={name:k,leads:0,pipeVal:0,wonVal:0,lost:0};
-    salesMap[k].leads++;
-  });
-  DB.opportunities.forEach(o=>{
-    const k=o.ownerName||'Unassigned';
-    if(!salesMap[k]) salesMap[k]={name:k,leads:0,pipeVal:0,wonVal:0,lost:0};
-    salesMap[k].pipeVal+=parseFloat(o.value)||0;
-    if(o.stage==='Closed Won') salesMap[k].wonVal+=parseFloat(o.value)||0;
-    if(o.stage==='Closed Lost') salesMap[k].lost++;
-  });
-  const salesBod=document.getElementById('rpt-sales-conv-body');
-  if(salesBod) salesBod.innerHTML=Object.values(salesMap).length?Object.values(salesMap).map(s=>{
-    const winRate=s.leads>0?Math.round((s.wonVal>0?1:0)/Math.max(s.leads,1)*100):0;
-    const wr2=s.pipeVal>0?Math.round(s.wonVal/s.pipeVal*100):0;
-    return `<tr><td class="tname">${s.name}</td><td>${s.leads}</td>
-      <td>${fmt(s.pipeVal)}</td><td style="color:var(--green);font-weight:600">${fmt(s.wonVal)}</td>
-      <td><span class="badge ${s.lost>0?'lost':'won'}">${s.lost}</span></td>
-      <td><span class="badge ${wr2>=50?'won':wr2>=20?'pending':'lost'}">${wr2}%</span></td></tr>`;
-  }).join(''):'<tr><td colspan="6" class="empty">No sales data</td></tr>';
+  else if(tab==='tasks'){
+    const taskEmpMap={};
+    DB.tasks.filter(t=>inRptRange(t.createdAt)).forEach(t=>{
+      const key=t.assignedName||'Unassigned';
+      if(!taskEmpMap[key]) taskEmpMap[key]={name:key,total:0,pending:0,done:0,onTime:0,overdue:0};
+      taskEmpMap[key].total++;
+      if(t.status==='Completed'){
+        taskEmpMap[key].done++;
+        if(t.dueDate){const due=new Date(t.dueDate);due.setHours(0,0,0,0);const comp=t.completedAt?new Date(t.completedAt):new Date();if(comp<=due)taskEmpMap[key].onTime++;else taskEmpMap[key].overdue++;}
+      } else {
+        taskEmpMap[key].pending++;
+        if(t.dueDate){const due=new Date(t.dueDate);due.setHours(0,0,0,0);if(today>due)taskEmpMap[key].overdue++;}
+      }
+    });
+    const bod=document.getElementById('rpt-task-body');
+    const rows=Object.values(taskEmpMap);
+    const op=e=>e.done?Math.round(e.onTime/e.done*100):0;
+    if(bod) bod.innerHTML=rows.length?rows.map(e=>`<tr>
+      <td class="tname">${e.name}</td><td>${e.total}</td>
+      <td><span class="badge ${e.pending>0?'pending':'won'}">${e.pending}</span></td>
+      <td>${e.done}</td><td style="color:var(--green);font-weight:600">${e.onTime}</td>
+      <td><span class="badge ${e.overdue>0?'lost':'won'}">${e.overdue}</span></td>
+      <td><span class="badge ${op(e)>=80?'won':op(e)>=50?'pending':'lost'}">${op(e)}%</span></td></tr>`
+    ).join(''):'<tr><td colspan="7" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='campaign'){
+    const bod=document.getElementById('rpt-camp-body');
+    if(bod){
+      const rows=DB.campaigns.map(c=>{
+        const wkins=DB.walkins.filter(w=>(w.campaign===c.id||w.campaignName===c.name)&&inRptRange(w.createdAt)).length;
+        const prosp=DB.walkins.filter(w=>(w.campaign===c.id||w.campaignName===c.name)&&w.status==='Prospect'&&inRptRange(w.createdAt)).length;
+        const exp=parseInt(c.expLeads)||0;
+        const campCustIds=new Set(DB.walkins.filter(w=>w.campaign===c.id||w.campaignName===c.name).map(w=>w.custId));
+        const lds=DB.leads.filter(l=>campCustIds.has(l.custId)&&inRptRange(l.createdAt)).length;
+        const won=DB.opportunities.filter(o=>campCustIds.has(o.custId)&&o.stage==='Closed Won').length;
+        const reach=exp>0?Math.round(lds/exp*100):wkins>0?Math.round(lds/wkins*100):0;
+        const conv=lds>0?Math.round(won/lds*100):0;
+        return `<tr><td class="tname">${c.name}</td><td>${wkins}</td><td>${exp||'—'}</td><td>${prosp}</td><td>${lds}</td>
+          <td><span class="badge ${reach>=80?'won':reach>=40?'pending':'lost'}">${reach}%</span></td>
+          <td style="color:var(--green);font-weight:600">${won}</td>
+          <td><span class="badge ${conv>=30?'won':conv>=10?'pending':'lost'}">${conv}%</span></td>
+          <td style="font-size:11px">${c.budget?fmt(c.budget):'—'}</td></tr>`;
+      });
+      bod.innerHTML=rows.length?rows.join(''):'<tr><td colspan="9" class="empty">No campaigns</td></tr>';
+    }
+  }
+
+  else if(tab==='sales'){
+    const salesMap={};
+    DB.leads.filter(l=>inRptRange(l.createdAt)).forEach(l=>{
+      const k=l.assignedName||'Unassigned';
+      if(!salesMap[k]) salesMap[k]={name:k,leads:0,opps:0,pipeVal:0,wonVal:0,lost:0};
+      salesMap[k].leads++;
+    });
+    DB.opportunities.filter(o=>inRptRange(o.createdAt)).forEach(o=>{
+      const k=o.ownerName||'Unassigned';
+      if(!salesMap[k]) salesMap[k]={name:k,leads:0,opps:0,pipeVal:0,wonVal:0,lost:0};
+      salesMap[k].opps++;
+      salesMap[k].pipeVal+=parseFloat(o.value)||0;
+      if(o.stage==='Closed Won') salesMap[k].wonVal+=parseFloat(o.value)||0;
+      if(o.stage==='Closed Lost') salesMap[k].lost++;
+    });
+    const bod=document.getElementById('rpt-sales-conv-body');
+    if(bod) bod.innerHTML=Object.values(salesMap).length?Object.values(salesMap).map(s=>{
+      const wr=s.pipeVal>0?Math.round(s.wonVal/s.pipeVal*100):0;
+      return `<tr><td class="tname">${s.name}</td><td>${s.leads}</td><td>${s.opps}</td>
+        <td>${fmt(s.pipeVal)}</td><td style="color:var(--green);font-weight:600">${fmt(s.wonVal)}</td>
+        <td><span class="badge ${s.lost>0?'lost':'won'}">${s.lost}</span></td>
+        <td><span class="badge ${wr>=50?'won':wr>=20?'pending':'lost'}">${wr}%</span></td></tr>`;
+    }).join(''):'<tr><td colspan="7" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='leads'){
+    const rows=DB.leads.filter(l=>inRptRange(l.createdAt));
+    const bod=document.getElementById('rpt-leads-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(l=>{
+      const opp=DB.opportunities.find(o=>o.custId===l.custId||o.lead===l.id);
+      return `<tr><td class="tid">${l.id}</td><td class="tname">${l.company}</td>
+        <td style="font-size:11px">${l.productName||'—'}</td><td>${l.assignedName||'—'}</td>
+        <td>${l.value?fmt(l.value):'—'}</td>
+        <td><span class="badge" style="background:${l.statusColor||'var(--pl)'};color:var(--t1)">${l.statusName||l.status||'—'}</span></td>
+        <td>${opp?`<span class="badge ${sc[opp.stage]||'draft'}">${opp.stage}</span>`:'—'}</td>
+        <td style="font-size:10px;color:var(--t3)">${l.createdAt||'—'}</td></tr>`;
+    }).join(''):'<tr><td colspan="8" class="empty">No leads in range</td></tr>';
+  }
+
+  else if(tab==='pipeline'){
+    const rows=DB.opportunities.filter(o=>inRptRange(o.createdAt));
+    const bod=document.getElementById('rpt-pipeline-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(o=>`<tr>
+      <td class="tid">${o.id}</td><td class="tname">${o.customer}</td>
+      <td style="font-size:11px">${o.productName||'—'}</td>
+      <td>${o.value?fmt(o.value):'—'}</td>
+      <td><span class="badge ${sc[o.stage]||'draft'}">${o.stage}</span></td>
+      <td>${o.prob||'—'}%</td><td>${o.ownerName||'—'}</td>
+      <td style="font-size:11px">${fmtDate(o.closeDate)}</td></tr>`
+    ).join(''):'<tr><td colspan="8" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='quotations'){
+    const rows=DB.quotations.filter(q=>inRptRange(q.date||q.createdAt));
+    const bod=document.getElementById('rpt-quot-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(q=>`<tr>
+      <td class="tid">${q.id}</td><td class="tname">${q.customerName}</td>
+      <td style="font-size:11px">${q.productName||'—'}</td><td>${q.planName||'—'}</td>
+      <td style="font-weight:600">${fmt(q.total)}</td>
+      <td style="font-size:11px">${fmtDate(q.date)}</td></tr>`
+    ).join(''):'<tr><td colspan="6" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='invoices'){
+    const rows=DB.invoices.filter(i=>inRptRange(i.date||i.createdAt));
+    const bod=document.getElementById('rpt-inv-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(i=>`<tr>
+      <td class="tid">${i.id}</td><td class="tname">${i.customerName}</td>
+      <td style="font-size:11px">${i.productName||'—'}</td>
+      <td style="font-weight:600;color:var(--green)">${fmt(i.total)}</td>
+      <td><span class="badge ${i.payStatus==='Paid'?'won':'pending'}">${i.payStatus||'—'}</span></td>
+      <td style="font-size:11px">${fmtDate(i.date)}</td></tr>`
+    ).join(''):'<tr><td colspan="6" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='onboard'){
+    const rows=DB.onboards.filter(o=>inRptRange(o.golive||o.createdAt));
+    const bod=document.getElementById('rpt-onboard-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(o=>`<tr>
+      <td class="tid">${o.id}</td><td class="tname">${o.customerName}</td>
+      <td style="font-size:11px">${o.product||'—'}</td><td>${o.plan||'—'}</td>
+      <td>${o.managerName||'—'}</td><td style="font-size:11px">${fmtDate(o.golive)}</td>
+      <td><span class="badge ${o.status==='Active'?'won':'pending'}">${o.status||'—'}</span></td></tr>`
+    ).join(''):'<tr><td colspan="7" class="empty">No data</td></tr>';
+  }
+
+  else if(tab==='tasks-detail'){
+    const rows=DB.tasks.filter(t=>inRptRange(t.createdAt));
+    const bod=document.getElementById('rpt-tasksdt-body');
+    if(bod) bod.innerHTML=rows.length?rows.map(t=>`<tr>
+      <td class="tid">${t.id}</td><td class="tname">${t.title}</td>
+      <td>${t.assignedName||'—'}</td>
+      <td style="font-size:11px">${t.relType||'—'} ${t.refId?`<span class="tid" style="font-size:9px">${t.refId}</span>`:''}</td>
+      <td><span class="badge ${(t.priority||'').toLowerCase()}">${t.priority||'—'}</span></td>
+      <td style="font-size:11px">${fmtDate(t.dueDate)}</td>
+      <td><span class="badge ${t.status==='Completed'?'won':'pending'}">${t.status}</span></td>
+      <td style="font-size:10px;color:var(--t3)">${t.createdAt||'—'}</td></tr>`
+    ).join(''):'<tr><td colspan="8" class="empty">No data</td></tr>';
+  }
 }
 
-const reportTables={
-  leads:{title:'Lead Pipeline Report',cols:['ID','Company','Product','Assigned','Value','Status'],rows:()=>DB.leads.map(l=>[l.id,l.company,l.productName||'—',l.assignedName||'—',l.value?fmt(l.value):'—',l.statusName||'New'])},
-  pipeline:{title:'Opportunity Report',cols:['ID','Customer','Product','Value','Stage','Prob%'],rows:()=>DB.opportunities.map(o=>[o.id,o.customer,o.productName||'—',o.value?fmt(o.value):'—',o.stage,o.prob||'—'])},
-  quotations:{title:'Quotations Report',cols:['Quot No','Customer','Product','Plan','Total','Date'],rows:()=>DB.quotations.map(q=>[q.id,q.customerName,q.productName,q.planName,fmt(q.total),fmtDate(q.date)])},
-  invoices:{title:'Invoice Report',cols:['Inv No','Customer','Product','Total','Pay Status','Date'],rows:()=>DB.invoices.map(i=>[i.id,i.customerName,i.productName,fmt(i.total),i.payStatus,fmtDate(i.date)])},
-  onboard:{title:'Client On-Board Report',cols:['ID','Customer','Product','Plan','Manager','Go-Live','Status'],rows:()=>DB.onboards.map(o=>[o.id,o.customerName,o.product||'—',o.plan||'—',o.managerName||'—',fmtDate(o.golive),o.status])},
-  training:{title:'Training Report',cols:['ID','Client','Type','Trainer','Date','Status'],rows:()=>DB.trainings.map(t=>[t.id,t.clientName,t.type,t.trainerName||'—',fmtDate(t.date),t.status])},
-  tasks:{title:'Task Completion Report',cols:['ID','Title','Assigned','Priority','Due','Status'],rows:()=>DB.tasks.map(t=>[t.id,t.title,t.assignedName||'—',t.priority,fmtDate(t.dueDate),t.status])},
-  handover:{title:'Handover Report',cols:['ID','Client','Date','Support Team','AMC Start','AMC End'],rows:()=>DB.handovers.map(h=>[h.id,h.clientName,fmtDate(h.date),h.supportName||'—',fmtDate(h.amcStart),fmtDate(h.amcEnd)])}
-};
-function showReportModal(type){
-  const r=reportTables[type]; if(!r) return;
-  const rows=r.rows();
-  const thead=r.cols.map(c=>`<th style="padding:7px 10px;background:var(--bg2);font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;border:1px solid var(--border)">${c}</th>`).join('');
-  const tbody=rows.length?rows.map(row=>`<tr>${row.map(cell=>`<td style="padding:7px 10px;border:1px solid var(--border);font-size:11px;color:var(--t2)">${cell}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${r.cols.length}" style="padding:20px;text-align:center;color:var(--t3)">No data</td></tr>`;
-  showModal(r.title,`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table></div><div style="margin-top:12px;font-size:11px;color:var(--t3)">${rows.length} record(s)</div>`);
-}
+function showReportModal(type){ nav('reports',null); }
 
 // ═══════════════════════════════════════════════════
 // GLOBAL SEARCH
@@ -3759,11 +4041,7 @@ function init(){
   const defaultStatuses=[
     {name:'New Lead',order:1,color:'#7c3aed'},
     {name:'Contacted',order:2,color:'#4361ee'},
-    {name:'Demo Scheduled',order:3,color:'#0891b2'},
-    {name:'Proposal Sent',order:4,color:'#d97706'},
-    {name:'Negotiation',order:5,color:'#e11d48'},
-    {name:'Won',order:6,color:'#059669'},
-    {name:'Lost',order:7,color:'#6b7280'},
+    {name:'Pipeline',order:3,color:'#0891b2'},
   ];
   defaultStatuses.forEach(s=>DB.leadStatuses.push({id:nextId('LS'),name:s.name,order:s.order,color:s.color,active:'Active'}));
   renderLeadStatusList();
